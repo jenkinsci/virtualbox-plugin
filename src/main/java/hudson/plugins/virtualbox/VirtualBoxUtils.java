@@ -17,7 +17,7 @@ public final class VirtualBoxUtils {
   private VirtualBoxUtils() {
   }
 
-  public static IVirtualBox connect(String url, String username, String password) {
+  private static IVirtualBox connect(VirtualBoxHost host) {
     // working around https://jax-ws.dev.java.net/issues/show_bug.cgi?id=554
     // this is also necessary when context classloader doesn't have the JAX-WS API
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -28,8 +28,8 @@ public final class VirtualBoxUtils {
         throw new LinkageError("vboxwebService.wsdl not found, but it should have been in the jar");
       VboxService svc = new VboxService(wsdl, new QName("http://www.virtualbox.org/Service", "vboxService"));
       VboxPortType port = svc.getVboxServicePort();
-      ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url);
-      String vbox = port.iWebsessionManagerLogon(username, password);
+      ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, host.getUrl());
+      String vbox = port.iWebsessionManagerLogon(host.getUsername(), host.getPassword());
       return new IVirtualBox(vbox, port);
     } catch (InvalidObjectFaultMsg e) {
       throw new WebServiceException(e);
@@ -42,7 +42,7 @@ public final class VirtualBoxUtils {
 
   public static List<VirtualBoxMachine> getMachines(VirtualBoxHost host) {
     List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
-    IVirtualBox box = connect(host.getUrl(), host.getUsername(), host.getPassword());
+    IVirtualBox box = connect(host);
     for (IMachine machine : box.getMachines()) {
       result.add(new VirtualBoxMachine(host, machine.getName()));
     }
@@ -50,26 +50,10 @@ public final class VirtualBoxUtils {
     return result;
   }
 
-  public static long startVm(VirtualBoxMachine machine) {
-    return startVm(machine.getHost(), machine.getName());
-  }
-
-  public static void stopVm(VirtualBoxMachine machine) {
-    stopVm(machine.getHost(), machine.getName());
-  }
-
-  public static long startVm(VirtualBoxHost host, String vmName) {
-    return startVm(host.getUrl(), host.getUsername(), host.getPassword(), vmName);
-  }
-
-  public static void stopVm(VirtualBoxHost host, String vmName) {
-    stopVm(host.getUrl(), host.getUsername(), host.getPassword(), vmName);
-  }
-
-  private static long startVm(String url, String username, String password, String vmName) {
-    IVirtualBox box = connect(url, username, password);
+  public static long startVm(VirtualBoxMachine vbMachine) {
+    IVirtualBox box = connect(vbMachine.getHost());
     ISession session = box.getSessionObject();
-    IMachine machine = box.findMachine(vmName);
+    IMachine machine = box.findMachine(vbMachine.getName());
     IProgress progress = box.openRemoteSession(
         session,
         machine.getId(),
@@ -81,9 +65,9 @@ public final class VirtualBoxUtils {
     return progress.getResultCode();
   }
 
-  private static void stopVm(String url, String username, String password, String vmName) {
-    IVirtualBox box = connect(url, username, password);
-    IMachine machine = box.findMachine(vmName);
+  public static void stopVm(VirtualBoxMachine vbMachine) {
+    IVirtualBox box = connect(vbMachine.getHost());
+    IMachine machine = box.findMachine(vbMachine.getName());
     ISession session = box.getSessionObject();
     box.openExistingSession(box.getSessionObject(), machine.getId());
     session.getConsole().powerDown();
