@@ -1,5 +1,5 @@
 <div>
-  This plugin integrates
+  This plugin integrates Hudson with
   <a href="http://www.virtualbox.org/">VirtualBox</a>
-  virtual machine with Hudson.
+  virtual machine.
 </div>
