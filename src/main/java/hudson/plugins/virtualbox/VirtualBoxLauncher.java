@@ -128,11 +128,6 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
 
   @Extension
   public static class DescriptorImpl extends Descriptor<ComputerLauncher> {
-
-    public DescriptorImpl() {
-      super(VirtualBoxLauncher.class);
-    }
-
     public String getDisplayName() {
       return Messages.VirtualBoxLauncher_displayName();
     }
