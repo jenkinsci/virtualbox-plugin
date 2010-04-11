@@ -72,13 +72,11 @@ public class VirtualBoxSlave extends Slave {
     return VirtualBoxPlugin.getHosts();
   }
 
-  public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-
   @Extension
   public static final class DescriptorImpl extends SlaveDescriptor {
     @Override
     public String getDisplayName() {
-      return "VirtualBox Slave";
+      return Messages.VirtualBoxSlave_displayName();
     }
 
     /**

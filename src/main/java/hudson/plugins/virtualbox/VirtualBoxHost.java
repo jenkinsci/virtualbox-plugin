@@ -45,11 +45,6 @@ public class VirtualBoxHost extends Cloud {
     return false;
   }
 
-  @Override
-  public DescriptorImpl getDescriptor() {
-    return (DescriptorImpl) super.getDescriptor();
-  }
-
   private List<VirtualBoxMachine> retrieveMachines() {
     return VirtualBoxUtils.getMachines(this);
   }
