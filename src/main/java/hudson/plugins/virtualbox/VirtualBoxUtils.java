@@ -6,12 +6,14 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Evgeny Mandrikov
  */
 public final class VirtualBoxUtils {
-  
+
   private VirtualBoxUtils() {
   }
 
@@ -38,7 +40,32 @@ public final class VirtualBoxUtils {
     }
   }
 
-  public static long startVm(String url, String username, String password, String vmName) {
+  public static List<VirtualBoxMachine> getMachines(VirtualBoxHost host) {
+    List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
+    IVirtualBox box = connect(host.getUrl(), host.getUsername(), host.getPassword());
+    for (IMachine machine : box.getMachines()) {
+      result.add(new VirtualBoxMachine(host, machine.getName()));
+    }
+    return result;
+  }
+
+  public static long startVm(VirtualBoxMachine machine) {
+    return startVm(machine.getHost(), machine.getName());
+  }
+
+  public static void stopVm(VirtualBoxMachine machine) {
+    stopVm(machine.getHost(), machine.getName());
+  }
+
+  public static long startVm(VirtualBoxHost host, String vmName) {
+    return startVm(host.getUrl(), host.getUsername(), host.getPassword(), vmName);
+  }
+
+  public static void stopVm(VirtualBoxHost host, String vmName) {
+    stopVm(host.getUrl(), host.getUsername(), host.getPassword(), vmName);
+  }
+
+  private static long startVm(String url, String username, String password, String vmName) {
     IVirtualBox box = connect(url, username, password);
     ISession session = box.getSessionObject();
     IMachine machine = box.findMachine(vmName);
@@ -53,7 +80,7 @@ public final class VirtualBoxUtils {
     return progress.getResultCode();
   }
 
-  public static void stopVm(String url, String username, String password, String vmName) {
+  private static void stopVm(String url, String username, String password, String vmName) {
     IVirtualBox box = connect(url, username, password);
     IMachine machine = box.findMachine(vmName);
     ISession session = box.getSessionObject();
@@ -61,5 +88,4 @@ public final class VirtualBoxUtils {
     session.getConsole().powerDown();
     box.logoff();
   }
-
 }

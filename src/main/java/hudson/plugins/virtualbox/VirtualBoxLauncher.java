@@ -1,33 +1,32 @@
 package hudson.plugins.virtualbox;
 
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.Descriptor;
+import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.slaves.ComputerLauncher;
-import hudson.slaves.JNLPLauncher;
+import hudson.slaves.ComputerLauncherFilter;
 import hudson.slaves.SlaveComputer;
-import hudson.util.Scrambler;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
- * TODO see {@link hudson.slaves.ComputerLauncherFilter}
+ * {@link ComputerLauncher} implementation for VirtualBox.
  *
  * @author Evgeny Mandrikov
  */
-public class VirtualBoxLauncher extends JNLPLauncher {
+public class VirtualBoxLauncher extends ComputerLauncherFilter {
 
-  private final String url;
-  private final String username;
-  private final String password;
-  private final String vmName;
+  private String hostName;
+  private String virtualMachineName;
 
   @DataBoundConstructor
-  public VirtualBoxLauncher(String url, String username, String password, String vmName) {
-    this.url = url;
-    this.username = username;
-    this.password = Scrambler.scramble(Util.fixEmptyAndTrim(password));
-    this.vmName = vmName;
+  public VirtualBoxLauncher(ComputerLauncher delegate, String hostName, String virtualMachineName) {
+    super(delegate);
+    this.hostName = hostName;
+    this.virtualMachineName = virtualMachineName;
   }
 
   @Override
@@ -35,26 +34,53 @@ public class VirtualBoxLauncher extends JNLPLauncher {
     return true;
   }
 
+  /**
+   * For UI.
+   *
+   * @see VirtualBoxPlugin#getHosts()
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
+  public List<VirtualBoxHost> getHosts() {
+    return VirtualBoxPlugin.getHosts();
+  }
+
+  private VirtualBoxMachine getVirtualBoxMachine() {
+    for (VirtualBoxMachine machine : VirtualBoxPlugin.getHost(hostName).getVirtualMachines()) {
+      if (virtualMachineName.equals(machine.getName())) {
+        return machine;
+      }
+    }
+    return null;
+  }
+
   @Override
-  public void launch(SlaveComputer computer, TaskListener listener) {
-    log(listener, Messages.VirtualBoxLauncher_startVM(getVmName()));
+  public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
+    VirtualBoxMachine machine = getVirtualBoxMachine();
+    log(listener, Messages.VirtualBoxLauncher_startVM(machine));
     try {
-      long result = VirtualBoxUtils.startVm(getUrl(), getUsername(), getPassword(), getVmName());
+      long result = VirtualBoxUtils.startVm(machine);
+      log(listener, "Result: " + result);
       if (result != 0) {
         log(listener, "Unable to start"); // TODO l10n
       }
     } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
     }
-    
+
     super.launch(computer, listener);
   }
 
   @Override
+  public void beforeDisconnect(SlaveComputer computer, TaskListener listener) {
+    super.beforeDisconnect(computer, listener);
+  }
+
+  @Override
   public void afterDisconnect(SlaveComputer computer, TaskListener listener) {
-    log(listener, Messages.VirtualBoxLauncher_stopVM(getVmName()));
+    VirtualBoxMachine machine = getVirtualBoxMachine();
+    log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
     try {
-      VirtualBoxUtils.stopVm(getUrl(), getUsername(), getPassword(), getVmName());
+      VirtualBoxUtils.stopVm(machine);
     } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
     }
@@ -64,6 +90,23 @@ public class VirtualBoxLauncher extends JNLPLauncher {
 
   private static void log(TaskListener listener, String message) {
     listener.getLogger().println("[VirtualBox] " + message);
+  }
+
+  @Override
+  public Descriptor<ComputerLauncher> getDescriptor() {
+    return Hudson.getInstance().getDescriptorOrDie(getClass());
+  }
+
+  /**
+   * For UI.
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
+  public String getHostName() {
+    return hostName;
+  }
+
+  public String getVirtualMachineName() {
+    return virtualMachineName;
   }
 
   @Extension
@@ -77,21 +120,5 @@ public class VirtualBoxLauncher extends JNLPLauncher {
       return Messages.VirtualBoxLauncher_displayName();
     }
 
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public String getPassword() {
-    return Scrambler.descramble(password);
-  }
-
-  public String getVmName() {
-    return vmName;
   }
 }
