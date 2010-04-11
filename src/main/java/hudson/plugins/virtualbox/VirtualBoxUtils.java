@@ -46,6 +46,7 @@ public final class VirtualBoxUtils {
     for (IMachine machine : box.getMachines()) {
       result.add(new VirtualBoxMachine(host, machine.getName()));
     }
+    box.logoff();
     return result;
   }
 

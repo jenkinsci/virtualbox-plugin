@@ -32,14 +32,32 @@ public class VirtualBoxSlave extends Slave {
     this.virtualMachineName = virtualMachineName;
   }
 
+  /**
+   * For UI.
+   *
+   * @return host name
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
   public String getHostName() {
     return hostName;
   }
 
+  /**
+   * For UI.
+   *
+   * @return virtual machine name
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
   public String getVirtualMachineName() {
     return virtualMachineName;
   }
 
+  /**
+   * For UI.
+   *
+   * @return original launcher
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
   public ComputerLauncher getDelegateLauncher() {
     return ((VirtualBoxLauncher) getLauncher()).getCore();
   }
@@ -70,6 +88,7 @@ public class VirtualBoxSlave extends Slave {
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
+      // TODO NPE
       return VirtualBoxPlugin.getHost(hostName).getVirtualMachines();
     }
   }

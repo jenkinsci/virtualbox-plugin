@@ -4,29 +4,25 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-  <f:section title="VirtualBox">
+  <f:entry title="${%VirtualBox Host}" field="hostName">
+    <select class="setting-input" name="hostName" value="${it.hostName}">
+      <j:forEach var="d" items="${it.hosts}">
+        <option selected="${d.displayName==it.hostName?'true':null}">
+          ${d.displayName}
+        </option>
+      </j:forEach>
+    </select>
+  </f:entry>
 
-    <f:entry title="${%VirtualBox Host}" field="hostName">
-      <select class="setting-input" name="hostName" value="${it.hostName}">
-        <j:forEach var="d" items="${it.hosts}">
-          <option selected="${d.displayName==it.hostName?'true':null}">
-            ${d.displayName}
-          </option>
-        </j:forEach>
-      </select>
-    </f:entry>
-
-    <f:entry title="${%Virtual Machine Name}" field="virtualMachineName">
-      <select class="setting-input" name="virtualMachineName" value="${it.virtualMachineName}">
-        <j:forEach var="v" items="${descriptor.getDefinedVirtualMachines(it.hostName)}">
-          <option selected="${v.name==it.virtualMachineName?'true':null}">
-            ${v.name}
-          </option>
-        </j:forEach>
-      </select>
-    </f:entry>
-
-  </f:section>
+  <f:entry title="${%Virtual Machine Name}" field="virtualMachineName">
+    <select class="setting-input" name="virtualMachineName" value="${it.virtualMachineName}">
+      <j:forEach var="v" items="${descriptor.getDefinedVirtualMachines(it.hostName)}">
+        <option selected="${v.name==it.virtualMachineName?'true':null}">
+          ${v.name}
+        </option>
+      </j:forEach>
+    </select>
+  </f:entry>
 
   <!-- Copied from /hudson/slaves/DumbSlave/configure-entries.jelly : -->
 

@@ -11,6 +11,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * {@link ComputerLauncher} implementation for VirtualBox.
@@ -18,6 +20,8 @@ import java.util.List;
  * @author Evgeny Mandrikov
  */
 public class VirtualBoxLauncher extends ComputerLauncherFilter {
+
+  private static final Logger LOG = Logger.getLogger(VirtualBoxLauncher.class.getName());
 
   private String hostName;
   private String virtualMachineName;
@@ -45,6 +49,7 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
   }
 
   private VirtualBoxMachine getVirtualBoxMachine() {
+    // TODO NPE
     for (VirtualBoxMachine machine : VirtualBoxPlugin.getHost(hostName).getVirtualMachines()) {
       if (virtualMachineName.equals(machine.getName())) {
         return machine;
@@ -55,58 +60,78 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
 
   @Override
   public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
+    LOG.info("Launch: " + computer.getName());
     VirtualBoxMachine machine = getVirtualBoxMachine();
     log(listener, Messages.VirtualBoxLauncher_startVM(machine));
     try {
       long result = VirtualBoxUtils.startVm(machine);
       log(listener, "Result: " + result);
       if (result != 0) {
-        log(listener, "Unable to start"); // TODO l10n
+        log(listener, Messages.VirtualBoxLauncher_startFailed(machine));
       }
     } catch (Exception e) {
+      LOG.log(Level.WARNING, "Exception", e);
       e.printStackTrace(listener.getLogger());
     }
 
-    super.launch(computer, listener);
+    if (getCore() != null) {
+      super.launch(computer, listener);
+    }
   }
 
   @Override
   public void beforeDisconnect(SlaveComputer computer, TaskListener listener) {
-    super.beforeDisconnect(computer, listener);
-  }
+    LOG.info("Before disconnect: " + computer.getName());
 
-  @Override
-  public void afterDisconnect(SlaveComputer computer, TaskListener listener) {
+    if (getCore() != null) {
+      super.beforeDisconnect(computer, listener);
+    }
+
     VirtualBoxMachine machine = getVirtualBoxMachine();
     log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
     try {
       VirtualBoxUtils.stopVm(machine);
     } catch (Exception e) {
+      LOG.log(Level.WARNING, "Exception", e);
       e.printStackTrace(listener.getLogger());
     }
+  }
 
-    super.afterDisconnect(computer, listener);
+  @Override
+  public void afterDisconnect(SlaveComputer computer, TaskListener listener) {
+    LOG.info("After disconnect: " + computer.getName());
+    if (getCore() != null) {
+      super.afterDisconnect(computer, listener);
+    }
   }
 
   private static void log(TaskListener listener, String message) {
     listener.getLogger().println("[VirtualBox] " + message);
   }
 
-  @Override
-  public Descriptor<ComputerLauncher> getDescriptor() {
-    return Hudson.getInstance().getDescriptorOrDie(getClass());
-  }
-
   /**
    * For UI.
+   *
+   * @return host name
    */
   @SuppressWarnings({"UnusedDeclaration"})
   public String getHostName() {
     return hostName;
   }
 
+  /**
+   * For UI.
+   *
+   * @return virtual machine name
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
   public String getVirtualMachineName() {
     return virtualMachineName;
+  }
+
+  @Override
+  public Descriptor<ComputerLauncher> getDescriptor() {
+    return Hudson.getInstance().getDescriptorByType(DescriptorImpl.class);
   }
 
   @Extension
@@ -120,5 +145,15 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
       return Messages.VirtualBoxLauncher_displayName();
     }
 
+    /**
+     * For UI.
+     *
+     * @see VirtualBoxPlugin#getHost(String)
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
+      // TODO NPE
+      return VirtualBoxPlugin.getHost(hostName).getVirtualMachines();
+    }
   }
 }

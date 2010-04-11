@@ -2,8 +2,8 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
   <f:entry title="${%VirtualBox Host}" field="hostName">
-    <select class="setting-input" name="hostName" value="${it.hostName}">
-      <j:forEach var="d" items="${it.hosts}">
+    <select class="setting-input" name="hostName" value="${instance.hostName}">
+      <j:forEach var="d" items="${instance.hosts}">
         <option selected="${d.displayName==it.hostName?'true':null}">
           ${d.displayName}
         </option>
@@ -11,8 +11,14 @@
     </select>
   </f:entry>
 
-  <f:entry title="${%Virtual Machine Name}">
-    <f:textbox name="launcher.virtualMachineName" value="${instance.virtualMachineName}"/>
+  <f:entry title="${%Virtual Machine Name}" field="virtualMachineName">
+    <select class="setting-input" name="virtualMachineName" value="${instance.virtualMachineName}">
+      <j:forEach var="v" items="${descriptor.getDefinedVirtualMachines(instance.hostName)}">
+        <option selected="${v.name==instance.virtualMachineName?'true':null}">
+          ${v.name}
+        </option>
+      </j:forEach>
+    </select>
   </f:entry>
 
 </j:jelly>
