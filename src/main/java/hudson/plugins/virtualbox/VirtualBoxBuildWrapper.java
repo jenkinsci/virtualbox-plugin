@@ -9,6 +9,7 @@ import hudson.tasks.BuildWrapper;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Evgeny Mandrikov
@@ -18,14 +19,31 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
   private String virtualMachineName;
 
   @DataBoundConstructor
-  public VirtualBoxBuildWrapper() {
+  public VirtualBoxBuildWrapper(String hostName, String virtualMachineName) {
     super();
+    this.hostName = hostName;
+    this.virtualMachineName = virtualMachineName;
   }
 
   @Override
   public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-    // TODO implement me
-    throw new UnsupportedOperationException("Not implemented");
+    VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
+    listener.getLogger().println(Messages.VirtualBoxLauncher_startVM(machine));
+    VirtualBoxUtils.startVm(machine);
+    // TODO wait for start
+
+    class EnvironmentImpl extends Environment {
+      @Override
+      public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+        VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
+        listener.getLogger().println(Messages.VirtualBoxLauncher_stopVM(machine));
+        VirtualBoxUtils.stopVm(machine);
+        // TODO wait for stop
+        return true;
+      }
+    }
+
+    return new EnvironmentImpl();
   }
 
   public String getHostName() {
@@ -41,6 +59,26 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
     @Override
     public String getDisplayName() {
       return Messages.VirtualBoxBuildWrapper_displayName();
+    }
+
+    /**
+     * For UI.
+     *
+     * @see VirtualBoxPlugin#getHost(String)
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
+      return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
+    }
+
+    /**
+     * For UI.
+     *
+     * @see VirtualBoxPlugin#getHosts()
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<VirtualBoxHost> getHosts() {
+      return VirtualBoxPlugin.getHosts();
     }
   }
 }

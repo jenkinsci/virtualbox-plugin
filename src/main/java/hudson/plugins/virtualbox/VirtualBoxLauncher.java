@@ -38,16 +38,6 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
     return true;
   }
 
-  /**
-   * For UI.
-   *
-   * @see VirtualBoxPlugin#getHosts()
-   */
-  @SuppressWarnings({"UnusedDeclaration"})
-  public List<VirtualBoxHost> getHosts() {
-    return VirtualBoxPlugin.getHosts();
-  }
-
   @Override
   public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
     LOG.info("Launch: " + computer.getName());
@@ -151,6 +141,16 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
       return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
+    }
+
+    /**
+     * For UI.
+     *
+     * @see VirtualBoxPlugin#getHosts()
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<VirtualBoxHost> getHosts() {
+      return VirtualBoxPlugin.getHosts();
     }
   }
 }
