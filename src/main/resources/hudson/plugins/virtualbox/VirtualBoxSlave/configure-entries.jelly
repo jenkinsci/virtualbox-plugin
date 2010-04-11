@@ -5,8 +5,10 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
   <f:entry title="${%VirtualBox Host}" field="hostName">
-    <select class="setting-input" name="hostName" value="${it.hostName}">
-      <j:forEach var="d" items="${it.hosts}">
+    <select class="setting-input" name="hostName" value="${it.hostName}"
+            onchange="updateListBox(document.getElementsByName('virtualMachineName')[0],'${rootURL}/plugin/virtualbox/computerNameValues?hostName='+encode(this.value))">
+      <option>Select host...</option>
+      <j:forEach var="d" items="${descriptor.hosts}">
         <option selected="${d.displayName==it.hostName?'true':null}">
           ${d.displayName}
         </option>

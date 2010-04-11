@@ -3,7 +3,13 @@ package hudson.plugins.virtualbox;
 import hudson.Plugin;
 import hudson.model.Hudson;
 import hudson.slaves.Cloud;
+import hudson.util.ListBoxModel;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +52,9 @@ public class VirtualBoxPlugin extends Plugin {
    * @return {@link VirtualBoxHost} by specified name, null if not found
    */
   public static VirtualBoxHost getHost(String hostName) {
+    if (hostName == null) {
+      return null;
+    }
     for (VirtualBoxHost host : getHosts()) {
       if (hostName.equals(host.getDisplayName())) {
         return host;
@@ -82,5 +91,22 @@ public class VirtualBoxPlugin extends Plugin {
       }
     }
     return null;
+  }
+
+  /**
+   * For UI.
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
+  public void doComputerNameValues(StaplerRequest req, StaplerResponse resp, @QueryParameter("hostName") String hostName)
+      throws IOException, ServletException {
+    ListBoxModel m = new ListBoxModel();
+    List<VirtualBoxMachine> virtualMachines = getDefinedVirtualMachines(hostName);
+    if (virtualMachines != null && virtualMachines.size() > 0) {
+      for (VirtualBoxMachine vm : virtualMachines) {
+        m.add(new ListBoxModel.Option(vm.getName(), vm.getName()));
+      }
+      m.get(0).selected = true;
+    }
+    m.writeTo(req, resp);
   }
 }

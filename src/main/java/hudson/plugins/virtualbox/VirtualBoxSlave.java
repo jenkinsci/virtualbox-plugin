@@ -62,16 +62,6 @@ public class VirtualBoxSlave extends Slave {
     return ((VirtualBoxLauncher) getLauncher()).getCore();
   }
 
-  /**
-   * For UI.
-   *
-   * @see VirtualBoxPlugin#getHosts()
-   */
-  @SuppressWarnings({"UnusedDeclaration"})
-  public List<VirtualBoxHost> getHosts() {
-    return VirtualBoxPlugin.getHosts();
-  }
-
   @Extension
   public static final class DescriptorImpl extends SlaveDescriptor {
     @Override
@@ -87,6 +77,16 @@ public class VirtualBoxSlave extends Slave {
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
       return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
+    }
+
+    /**
+     * For UI.
+     *
+     * @see VirtualBoxPlugin#getHosts()
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<VirtualBoxHost> getHosts() {
+      return VirtualBoxPlugin.getHosts();
     }
   }
 
