@@ -51,8 +51,14 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
   @Override
   public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
     LOG.info("Launch: " + computer.getName());
-    // TODO NPE
+
     VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
+    if (machine == null) {
+      LOG.warning("Can't find specified VirtualBox host or machine");
+      log(listener, "Can't find specified VirtualBox host or machine"); // TODO l10n
+      return;
+    }
+
     log(listener, Messages.VirtualBoxLauncher_startVM(machine));
     try {
       long result = VirtualBoxUtils.startVm(machine);
@@ -74,12 +80,17 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
   public void beforeDisconnect(SlaveComputer computer, TaskListener listener) {
     LOG.info("Before disconnect: " + computer.getName());
 
+    VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
+    if (machine == null) {
+      LOG.warning("Can't find specified VirtualBox host or machine");
+      log(listener, "Can't find specified VirtualBox host or machine"); // TODO l10n
+      return;
+    }
+
     if (getCore() != null) {
       super.beforeDisconnect(computer, listener);
     }
 
-    // TODO NPE
-    VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
     log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
     try {
       VirtualBoxUtils.stopVm(machine);

@@ -81,6 +81,9 @@ public class VirtualBoxPlugin extends Plugin {
    * @return {@link VirtualBoxMachine} from specified host with specified name, null if not found
    */
   public static VirtualBoxMachine getVirtualBoxMachine(String hostName, String virtualMachineName) {
+    if (virtualMachineName == null) {
+      return null;
+    }
     VirtualBoxHost host = VirtualBoxPlugin.getHost(hostName);
     if (host == null) {
       return null;

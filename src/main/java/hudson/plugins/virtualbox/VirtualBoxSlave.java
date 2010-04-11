@@ -1,15 +1,19 @@
 package hudson.plugins.virtualbox;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.Slave;
 import hudson.slaves.ComputerLauncher;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.RetentionStrategy;
+import hudson.util.FormValidation;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * {@link Slave} implementation for VirtualBox.
@@ -17,13 +21,14 @@ import java.util.List;
  * @author Evgeny Mandrikov
  */
 public class VirtualBoxSlave extends Slave {
+  private static final Logger LOG = Logger.getLogger(VirtualBoxSlave.class.getName());
 
   private final String hostName;
   private final String virtualMachineName;
 
   @DataBoundConstructor
   public VirtualBoxSlave(
-      String name, String nodeDescription, String remoteFS, int numExecutors, Mode mode, String labelString,
+      String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
       ComputerLauncher launcher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
       String hostName, String virtualMachineName
   ) throws Descriptor.FormException, IOException {
@@ -87,6 +92,32 @@ public class VirtualBoxSlave extends Slave {
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxHost> getHosts() {
       return VirtualBoxPlugin.getHosts();
+    }
+
+    /**
+     * For UI.
+     * TODO Godin: doesn't work
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public FormValidation doCheckHostName(@QueryParameter String value) {
+      LOG.info("Perform on the fly check - hostName");
+      if (Util.fixEmptyAndTrim(value) == null) {
+        return FormValidation.error("VirtualBox Host is mandatory");
+      }
+      return FormValidation.ok();
+    }
+
+    /**
+     * For UI.
+     * TODO Godin: doesn't work
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public FormValidation doCheckVirtualMachineName(@QueryParameter String value) {
+      LOG.info("Perform on the fly check - virtualMachineName");
+      if (Util.fixEmptyAndTrim(value) == null) {
+        return FormValidation.error("Virtual Machine Name is mandatory");
+      }
+      return FormValidation.ok();
     }
   }
 

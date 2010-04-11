@@ -14,6 +14,9 @@ import java.io.IOException;
  * @author Evgeny Mandrikov
  */
 public class VirtualBoxBuildWrapper extends BuildWrapper {
+  private String hostName;
+  private String virtualMachineName;
+
   @DataBoundConstructor
   public VirtualBoxBuildWrapper() {
     super();
@@ -25,9 +28,12 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
     throw new UnsupportedOperationException("Not implemented");
   }
 
-  @Override
-  public DescriptorImpl getDescriptor() {
-    return (DescriptorImpl) super.getDescriptor();
+  public String getHostName() {
+    return hostName;
+  }
+
+  public String getVirtualMachineName() {
+    return virtualMachineName;
   }
 
   @Extension
