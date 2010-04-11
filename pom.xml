@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.346</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>virtualbox</artifactId>
+  <packaging>hpi</packaging>
+  <version>0.1-SNAPSHOT</version>
+  <name>Hudson VirtualBox plugin</name>
+  <url>http://wiki.hudson-ci.org/display/HUDSON/VirtualBox+plugin</url>
+
+  <developers>
+    <developer>
+      <id>godin</id>
+      <name>Evgeny Mandrikov</name>
+      <timezone>+3</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jvnet.jax-ws-commons</groupId>
+      <artifactId>virtualbox</artifactId>
+      <version>2.2-rev3</version>
+    </dependency>
+  </dependencies>
+
+  <!--scm>
+      <connection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/vmware-0.8</connection>
+      <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/vmware-0.8</developerConnection>
+      <url>https://hudson.dev.java.net/source/browse/hudson/hudson/plugins/vmware/tags/vmware-0.8</url>
+  </scm-->
+</project>

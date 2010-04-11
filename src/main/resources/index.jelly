@@ -1,0 +1,5 @@
+<div>
+  This plugin integrates
+  <a href="http://www.virtualbox.org/">VirtualBox</a>
+  virtual machine activation to Hudson.
+</div>
