@@ -32,6 +32,7 @@ public class VirtualBoxHost extends Cloud {
     this.url = url;
     this.username = username;
     this.password = Scrambler.scramble(Util.fixEmptyAndTrim(password));
+    this.virtualBoxMachines = retrieveMachines();
   }
 
   @Override
@@ -49,13 +50,13 @@ public class VirtualBoxHost extends Cloud {
     return (DescriptorImpl) super.getDescriptor();
   }
 
-  private List<VirtualBoxMachine> retrieve() {
+  private List<VirtualBoxMachine> retrieveMachines() {
     return VirtualBoxUtils.getMachines(this);
   }
 
   public List<VirtualBoxMachine> getVirtualMachines() {
     if (virtualBoxMachines == null) {
-      virtualBoxMachines = retrieve();
+      virtualBoxMachines = retrieveMachines();
     }
     return virtualBoxMachines;
   }
@@ -64,7 +65,7 @@ public class VirtualBoxHost extends Cloud {
   public static class DescriptorImpl extends Descriptor<Cloud> {
     @Override
     public String getDisplayName() {
-      return "VirtualBox";
+      return Messages.VirtualBoxHost_displayName();
     }
   }
 

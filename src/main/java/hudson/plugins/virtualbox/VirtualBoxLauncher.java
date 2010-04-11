@@ -130,8 +130,8 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
   }
 
   @Override
-  public Descriptor<ComputerLauncher> getDescriptor() {
-    return Hudson.getInstance().getDescriptorByType(DescriptorImpl.class);
+  public DescriptorImpl getDescriptor() {
+    return (DescriptorImpl) Hudson.getInstance().getDescriptorOrDie(VirtualBoxLauncher.class);
   }
 
   @Extension
