@@ -13,7 +13,7 @@
   <packaging>hpi</packaging>
   <version>0.1-SNAPSHOT</version>
   <name>Hudson VirtualBox plugin</name>
-  <url>http://wiki.hudson-ci.org/display/HUDSON/VirtualBox+plugin</url>
+  <url>http://wiki.hudson-ci.org/display/HUDSON/VirtualBox+Plugin</url>
 
   <developers>
     <developer>
