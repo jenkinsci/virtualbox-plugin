@@ -35,8 +35,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/virtualbox</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/virtualbox</developerConnection>
+    <connection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</developerConnection>
     <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
   </scm>
 </project>
