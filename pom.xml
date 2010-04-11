@@ -34,9 +34,9 @@
     </dependency>
   </dependencies>
 
-  <!--scm>
-      <connection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/vmware-0.8</connection>
-      <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/vmware-0.8</developerConnection>
-      <url>https://hudson.dev.java.net/source/browse/hudson/hudson/plugins/vmware/tags/vmware-0.8</url>
-  </scm-->
+  <scm>
+    <connection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/virtualbox</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/virtualbox</developerConnection>
+    <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
+  </scm>
 </project>
