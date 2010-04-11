@@ -24,6 +24,9 @@ public class VirtualBoxHost extends Cloud {
   private final String username;
   private final String password;
 
+  /**
+   * Lazily computed list of virtual machines from this host.
+   */
   private transient List<VirtualBoxMachine> virtualBoxMachines = null;
 
   @DataBoundConstructor

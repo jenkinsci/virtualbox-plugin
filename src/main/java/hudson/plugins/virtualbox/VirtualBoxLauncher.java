@@ -48,20 +48,11 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
     return VirtualBoxPlugin.getHosts();
   }
 
-  private VirtualBoxMachine getVirtualBoxMachine() {
-    // TODO NPE
-    for (VirtualBoxMachine machine : VirtualBoxPlugin.getHost(hostName).getVirtualMachines()) {
-      if (virtualMachineName.equals(machine.getName())) {
-        return machine;
-      }
-    }
-    return null;
-  }
-
   @Override
   public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
     LOG.info("Launch: " + computer.getName());
-    VirtualBoxMachine machine = getVirtualBoxMachine();
+    // TODO NPE
+    VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
     log(listener, Messages.VirtualBoxLauncher_startVM(machine));
     try {
       long result = VirtualBoxUtils.startVm(machine);
@@ -87,7 +78,8 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
       super.beforeDisconnect(computer, listener);
     }
 
-    VirtualBoxMachine machine = getVirtualBoxMachine();
+    // TODO NPE
+    VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
     log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
     try {
       VirtualBoxUtils.stopVm(machine);
@@ -152,8 +144,7 @@ public class VirtualBoxLauncher extends ComputerLauncherFilter {
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
-      // TODO NPE
-      return VirtualBoxPlugin.getHost(hostName).getVirtualMachines();
+      return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
     }
   }
 }

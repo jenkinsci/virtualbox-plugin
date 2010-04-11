@@ -86,8 +86,7 @@ public class VirtualBoxSlave extends Slave {
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
-      // TODO NPE
-      return VirtualBoxPlugin.getHost(hostName).getVirtualMachines();
+      return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
     }
   }
 
