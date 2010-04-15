@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * {@link Slave} implementation for VirtualBox.
+ * {@link Slave} running on VirtualBox.
  *
  * @author Evgeny Mandrikov
  */
@@ -29,10 +29,10 @@ public class VirtualBoxSlave extends Slave {
   @DataBoundConstructor
   public VirtualBoxSlave(
       String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
-      ComputerLauncher launcher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
+      ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
       String hostName, String virtualMachineName
   ) throws Descriptor.FormException, IOException {
-    super(name, nodeDescription, remoteFS, numExecutors, mode, labelString, new VirtualBoxLauncher(launcher, hostName, virtualMachineName), retentionStrategy, nodeProperties);
+    super(name, nodeDescription, remoteFS, numExecutors, mode, labelString, new VirtualBoxLauncher(delegateLauncher, hostName, virtualMachineName), retentionStrategy, nodeProperties);
     this.hostName = hostName;
     this.virtualMachineName = virtualMachineName;
   }
