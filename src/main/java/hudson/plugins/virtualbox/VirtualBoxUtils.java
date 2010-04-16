@@ -72,4 +72,12 @@ public final class VirtualBoxUtils {
     holder.disconnect();
     return result;
   }
+
+  public static String getMacAddress(VirtualBoxMachine vbMachine) {
+    ConnectionHolder holder = connect(vbMachine.getHost());
+    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
+    String macAddress = machine.getNetworkAdapter(0L).getMACAddress();
+    holder.disconnect();
+    return macAddress;
+  }
 }

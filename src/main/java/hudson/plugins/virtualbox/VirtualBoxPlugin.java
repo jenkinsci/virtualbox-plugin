@@ -2,6 +2,7 @@ package hudson.plugins.virtualbox;
 
 import hudson.Plugin;
 import hudson.model.Hudson;
+import hudson.model.Node;
 import hudson.slaves.Cloud;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.QueryParameter;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ * TODO see https://jax-ws.dev.java.net/issues/show_bug.cgi?id=554
+ *
  * @author Evgeny Mandrikov
  */
 public class VirtualBoxPlugin extends Plugin {
@@ -111,5 +114,43 @@ public class VirtualBoxPlugin extends Plugin {
       m.get(0).selected = true;
     }
     m.writeTo(req, resp);
+  }
+
+  /**
+   * Used for discovering {@link VirtualBoxSlave} with specified MAC Address.
+   * HTTP 404 Error will be returned, if slave can't be found.
+   * <p>
+   * For example: if slave named "virtual" has MAC Adress 080027E852CC, then
+   * http://localhost:8080/hudson/plugin/virtualbox/getSlaveAgent?macAddress=080027E852CC
+   * redirects to
+   * http://localhost:8080/hudson/computer/virtual/slave-agent.jnlp
+   * </p>
+   *
+   * @param req        request
+   * @param resp       response
+   * @param macAddress MAC Address
+   * @throws IOException if something wrong
+   */
+  @SuppressWarnings({"UnusedDeclaration"})
+  public void doGetSlaveAgent(StaplerRequest req, StaplerResponse resp, @QueryParameter("macAddress") String macAddress)
+      throws IOException {
+    LOG.info("Searching VirtualBox machine with MacAddress " + macAddress);
+    for (Node node : Hudson.getInstance().getNodes()) {
+      if (node instanceof VirtualBoxSlave) {
+        VirtualBoxSlave slave = (VirtualBoxSlave) node;
+        VirtualBoxMachine vbox = getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
+
+        String vboxMacAddress = VirtualBoxUtils.getMacAddress(vbox);
+        LOG.info("MacAddress for " + slave.getNodeName() + " is " + vboxMacAddress);
+
+        if (macAddress.equalsIgnoreCase(vboxMacAddress)) {
+          String url = Hudson.getInstance().getRootUrl() + "/computer/" + slave.getNodeName() + "/slave-agent.jnlp";
+          LOG.info("Found " + slave + " for Mac Address " + macAddress + ", sending redirect to " + url);
+          resp.sendRedirect(url);
+          return;
+        }
+      }
+    }
+    resp.sendError(404);
   }
 }

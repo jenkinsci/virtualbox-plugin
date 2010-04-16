@@ -76,6 +76,11 @@ public class VirtualBoxSlave extends Slave {
     return type;
   }
 
+  @Override
+  public VirtualBoxComputerLauncher getLauncher() {
+    return (VirtualBoxComputerLauncher) super.getLauncher();
+  }
+
   /**
    * For UI.
    *
@@ -83,7 +88,7 @@ public class VirtualBoxSlave extends Slave {
    */
   @SuppressWarnings({"UnusedDeclaration"})
   public ComputerLauncher getDelegateLauncher() {
-    return ((VirtualBoxComputerLauncher) getLauncher()).getCore();
+    return getLauncher().getCore();
   }
 
   @Extension
