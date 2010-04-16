@@ -35,13 +35,13 @@ public class VirtualBoxPlugin extends Plugin {
   }
 
   /**
-   * @return all registered {@link VirtualBoxHost}
+   * @return all registered {@link VirtualBoxCloud}
    */
-  public static List<VirtualBoxHost> getHosts() {
-    List<VirtualBoxHost> result = new ArrayList<VirtualBoxHost>();
+  public static List<VirtualBoxCloud> getHosts() {
+    List<VirtualBoxCloud> result = new ArrayList<VirtualBoxCloud>();
     for (Cloud cloud : Hudson.getInstance().clouds) {
-      if (cloud instanceof VirtualBoxHost) {
-        result.add((VirtualBoxHost) cloud);
+      if (cloud instanceof VirtualBoxCloud) {
+        result.add((VirtualBoxCloud) cloud);
       }
     }
     return result;
@@ -49,13 +49,13 @@ public class VirtualBoxPlugin extends Plugin {
 
   /**
    * @param hostName host name
-   * @return {@link VirtualBoxHost} by specified name, null if not found
+   * @return {@link VirtualBoxCloud} by specified name, null if not found
    */
-  public static VirtualBoxHost getHost(String hostName) {
+  public static VirtualBoxCloud getHost(String hostName) {
     if (hostName == null) {
       return null;
     }
-    for (VirtualBoxHost host : getHosts()) {
+    for (VirtualBoxCloud host : getHosts()) {
       if (hostName.equals(host.getDisplayName())) {
         return host;
       }
@@ -68,7 +68,7 @@ public class VirtualBoxPlugin extends Plugin {
    * @return all registered {@link VirtualBoxMachine} from specified host, empty list if unknown host
    */
   public static List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
-    VirtualBoxHost host = getHost(hostName);
+    VirtualBoxCloud host = getHost(hostName);
     if (host == null) {
       return Collections.emptyList();
     }
@@ -84,7 +84,7 @@ public class VirtualBoxPlugin extends Plugin {
     if (virtualMachineName == null) {
       return null;
     }
-    VirtualBoxHost host = VirtualBoxPlugin.getHost(hostName);
+    VirtualBoxCloud host = VirtualBoxPlugin.getHost(hostName);
     if (host == null) {
       return null;
     }
@@ -99,7 +99,7 @@ public class VirtualBoxPlugin extends Plugin {
   /**
    * For UI.
    */
-  @SuppressWarnings({"UnusedDeclaration"})
+  @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
   public void doComputerNameValues(StaplerRequest req, StaplerResponse resp, @QueryParameter("hostName") String hostName)
       throws IOException, ServletException {
     ListBoxModel m = new ListBoxModel();

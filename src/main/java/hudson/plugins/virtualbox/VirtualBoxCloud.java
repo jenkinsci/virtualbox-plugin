@@ -6,19 +6,24 @@ import hudson.model.Descriptor;
 import hudson.model.Label;
 import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
+import hudson.util.FormValidation;
 import hudson.util.Scrambler;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * {@link Cloud} implementation for VirtualBox.
  *
  * @author Evgeny Mandrikov
  */
-public class VirtualBoxHost extends Cloud {
+public class VirtualBoxCloud extends Cloud {
+
+  private static final Logger LOG = Logger.getLogger(VirtualBoxCloud.class.getName());
 
   private final String url;
   private final String username;
@@ -30,12 +35,11 @@ public class VirtualBoxHost extends Cloud {
   private transient List<VirtualBoxMachine> virtualBoxMachines = null;
 
   @DataBoundConstructor
-  public VirtualBoxHost(String displayName, String url, String username, String password) {
+  public VirtualBoxCloud(String displayName, String url, String username, String password) {
     super(displayName);
     this.url = url;
     this.username = username;
     this.password = Scrambler.scramble(Util.fixEmptyAndTrim(password));
-    this.virtualBoxMachines = retrieveMachines();
   }
 
   @Override
@@ -64,6 +68,24 @@ public class VirtualBoxHost extends Cloud {
     @Override
     public String getDisplayName() {
       return Messages.VirtualBoxHost_displayName();
+    }
+
+    /**
+     * For UI.
+     */
+    @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
+    public FormValidation doTestConnection(
+        @QueryParameter String url,
+        @QueryParameter String username,
+        @QueryParameter String password
+    ) {
+      LOG.info("Testing connection to " + url + " with username " + username);
+      try {
+        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password));
+        return FormValidation.ok(Messages.VirtualBoxHost_success());
+      } catch (Throwable e) {
+        return FormValidation.error(e.getMessage());
+      }
     }
   }
 

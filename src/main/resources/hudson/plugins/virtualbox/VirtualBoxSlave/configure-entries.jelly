@@ -26,6 +26,15 @@
     </select>
   </f:entry>
 
+  <!-- TODO
+  <f:entry title="${%Type}" field="type">
+    <select name="type">
+      <option value="vrdp">vrdp</option>
+      <option value="headless">headless</option>
+    </select>
+  </f:entry>
+  -->
+
   <!-- Copied from /hudson/slaves/DumbSlave/configure-entries.jelly : -->
 
   <f:entry title="${%Description}" help="/help/system-config/master-slave/description.html">

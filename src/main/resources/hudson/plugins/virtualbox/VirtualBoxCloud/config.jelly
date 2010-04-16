@@ -18,4 +18,6 @@
     <f:password/>
   </f:entry>
 
+  <f:validateButton title="${%Test connection}" progress="${%Testing...}" method="testConnection" with="url,username,password"/>
+
 </j:jelly>

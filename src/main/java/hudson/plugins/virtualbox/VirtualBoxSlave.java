@@ -2,6 +2,7 @@ package hudson.plugins.virtualbox;
 
 import hudson.Extension;
 import hudson.Util;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Slave;
 import hudson.slaves.ComputerLauncher;
@@ -25,6 +26,7 @@ public class VirtualBoxSlave extends Slave {
 
   private final String hostName;
   private final String virtualMachineName;
+  private final String type;
 
   @DataBoundConstructor
   public VirtualBoxSlave(
@@ -32,29 +34,46 @@ public class VirtualBoxSlave extends Slave {
       ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
       String hostName, String virtualMachineName
   ) throws Descriptor.FormException, IOException {
-    super(name, nodeDescription, remoteFS, numExecutors, mode, labelString, new VirtualBoxLauncher(delegateLauncher, hostName, virtualMachineName), retentionStrategy, nodeProperties);
+    super(
+        name,
+        nodeDescription,
+        remoteFS,
+        numExecutors,
+        mode,
+        labelString,
+        new VirtualBoxComputerLauncher(delegateLauncher),
+        retentionStrategy,
+        nodeProperties
+    );
     this.hostName = hostName;
     this.virtualMachineName = virtualMachineName;
+    this.type = "vrdp"; // TODO should be configurable
+  }
+
+  @Override
+  public Computer createComputer() {
+    return new VirtualBoxComputer(this);
   }
 
   /**
-   * For UI.
-   *
    * @return host name
    */
-  @SuppressWarnings({"UnusedDeclaration"})
   public String getHostName() {
     return hostName;
   }
 
   /**
-   * For UI.
-   *
    * @return virtual machine name
    */
-  @SuppressWarnings({"UnusedDeclaration"})
   public String getVirtualMachineName() {
     return virtualMachineName;
+  }
+
+  /**
+   * @return type of virtual machine, can be headless or vrdp
+   */
+  public String getType() {
+    return type;
   }
 
   /**
@@ -64,7 +83,7 @@ public class VirtualBoxSlave extends Slave {
    */
   @SuppressWarnings({"UnusedDeclaration"})
   public ComputerLauncher getDelegateLauncher() {
-    return ((VirtualBoxLauncher) getLauncher()).getCore();
+    return ((VirtualBoxComputerLauncher) getLauncher()).getCore();
   }
 
   @Extension
@@ -90,7 +109,7 @@ public class VirtualBoxSlave extends Slave {
      * @see VirtualBoxPlugin#getHosts()
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public List<VirtualBoxHost> getHosts() {
+    public List<VirtualBoxCloud> getHosts() {
       return VirtualBoxPlugin.getHosts();
     }
 

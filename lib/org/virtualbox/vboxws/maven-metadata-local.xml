@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.virtualbox</groupId>
+  <artifactId>vboxws</artifactId>
+  <version>3.1</version>
+  <versioning>
+    <versions>
+      <version>3.1</version>
+    </versions>
+    <lastUpdated>20100416025301</lastUpdated>
+  </versioning>
+</metadata>

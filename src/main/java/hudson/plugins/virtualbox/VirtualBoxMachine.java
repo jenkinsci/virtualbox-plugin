@@ -9,16 +9,16 @@ import java.io.Serializable;
  */
 public class VirtualBoxMachine implements Serializable, Comparable<VirtualBoxMachine> {
 
-  private final VirtualBoxHost host;
+  private final VirtualBoxCloud host;
   private final String name;
 
   @DataBoundConstructor
-  public VirtualBoxMachine(VirtualBoxHost host, String name) {
+  public VirtualBoxMachine(VirtualBoxCloud host, String name) {
     this.host = host;
     this.name = name;
   }
 
-  public VirtualBoxHost getHost() {
+  public VirtualBoxCloud getHost() {
     return host;
   }
 
