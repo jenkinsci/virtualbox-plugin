@@ -4,27 +4,15 @@
 
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>1.346</version>
+    <artifactId>virtualbox-parent</artifactId>
+    <version>0.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>virtualbox</artifactId>
   <packaging>hpi</packaging>
-  <version>0.2-SNAPSHOT</version>
-  <name>Hudson VirtualBox plugin</name>
+  <name>Hudson VirtualBox Plugin</name>
   <url>http://wiki.hudson-ci.org/display/HUDSON/VirtualBox+Plugin</url>
-
-  <developers>
-    <developer>
-      <id>godin</id>
-      <name>Evgeny Mandrikov</name>
-      <timezone>+3</timezone>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-  </developers>
 
   <dependencies>
     <dependency>
@@ -39,13 +27,7 @@
     <!-- Dirty hack -->
     <repository>
       <id>virtualbox-libs</id>
-      <url>file:${project.basedir}/lib</url>
+      <url>file:${project.basedir}/../lib</url>
     </repository>
   </repositories>
-
-  <scm>
-    <connection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
-  </scm>
 </project>
