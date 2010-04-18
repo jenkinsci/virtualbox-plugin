@@ -10,7 +10,7 @@
   <artifactId>virtualbox-parent</artifactId>
   <packaging>pom</packaging>
   <name>Hudson VirtualBox Parent</name>
-  <version>0.2</version>
+  <version>0.3-SNAPSHOT</version>
 
   <developers>
     <developer>
@@ -29,8 +29,8 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/virtualbox-parent-0.2</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/virtualbox-parent-0.2</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/tags/virtualbox-parent-0.2</url>
+    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</developerConnection>
+    <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
   </scm>
 </project>
