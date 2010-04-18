@@ -30,6 +30,10 @@ public final class VirtualBoxUtils {
     return holder;
   }
 
+  /**
+   * @param host VirtualBox host
+   * @return list of virtual machines installed on specified host
+   */
   public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host) {
     List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
     ConnectionHolder holder = connect(host);
@@ -40,6 +44,13 @@ public final class VirtualBoxUtils {
     return result;
   }
 
+  /**
+   * Starts specified VirtualBox virtual machine.
+   *
+   * @param vbMachine virtual machine to start
+   * @param type      session type (can be headless, vrdp, gui, sdl)
+   * @return result code
+   */
   public static long startVm(VirtualBoxMachine vbMachine, String type) {
     ConnectionHolder holder = connect(vbMachine.getHost());
     ISession session = holder.manager.getSessionObject(holder.vbox);
@@ -61,6 +72,12 @@ public final class VirtualBoxUtils {
     return result;
   }
 
+  /**
+   * Stops specified VirtualBox virtual machine.
+   *
+   * @param vbMachine virtual machine to stop
+   * @return result code
+   */
   public static long stopVm(VirtualBoxMachine vbMachine) {
     ConnectionHolder holder = connect(vbMachine.getHost());
     ISession session = holder.manager.getSessionObject(holder.vbox);
@@ -78,6 +95,10 @@ public final class VirtualBoxUtils {
     return result;
   }
 
+  /**
+   * @param vbMachine virtual machine
+   * @return MAC Address of specified virtual machine
+   */
   public static String getMacAddress(VirtualBoxMachine vbMachine) {
     ConnectionHolder holder = connect(vbMachine.getHost());
     IMachine machine = holder.vbox.findMachine(vbMachine.getName());
