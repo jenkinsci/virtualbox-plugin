@@ -26,14 +26,20 @@
     </select>
   </f:entry>
 
-  <!-- TODO
   <f:entry title="${%Type}" field="type">
-    <select name="type">
-      <option value="vrdp">vrdp</option>
-      <option value="headless">headless</option>
+    <select class="setting-input" name="type" value="${it.type}">
+      <j:choose>
+        <j:when test="it.type == 'vrdp'">
+          <option value="headless">headless</option>
+          <option value="vrdp" selected="true">vrdp</option>
+        </j:when>
+        <j:otherwise>
+          <option value="headless" selected="true">headless</option>
+          <option value="vrdp">vrdp</option>
+        </j:otherwise>
+      </j:choose>
     </select>
   </f:entry>
-  -->
 
   <!-- Copied from /hudson/slaves/DumbSlave/configure-entries.jelly : -->
 
@@ -99,6 +105,7 @@
     </f:dropdownList>
   </j:if>
 
-  <f:descriptorList title="${%Node Properties}" descriptors="${h.getNodePropertyDescriptors(descriptor.clazz)}" field="nodeProperties"/>
+  <f:descriptorList title="${%Node Properties}" descriptors="${h.getNodePropertyDescriptors(descriptor.clazz)}"
+                    field="nodeProperties"/>
 
 </j:jelly>

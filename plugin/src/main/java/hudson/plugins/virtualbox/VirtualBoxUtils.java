@@ -63,8 +63,13 @@ public final class VirtualBoxUtils {
 
   public static long stopVm(VirtualBoxMachine vbMachine) {
     ConnectionHolder holder = connect(vbMachine.getHost());
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
     ISession session = holder.manager.getSessionObject(holder.vbox);
+    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
+    // check virtual machine state - if not running, then do nothing
+    // TODO actually this should be in VirtualBoxComputerLauncher
+    if (org.virtualbox_3_1.MachineState.RUNNING != machine.getState()) {
+      return 0;
+    }
     holder.vbox.openExistingSession(session, machine.getId());
     IProgress progress = session.getConsole().powerDown();
     progress.waitForCompletion(-1);

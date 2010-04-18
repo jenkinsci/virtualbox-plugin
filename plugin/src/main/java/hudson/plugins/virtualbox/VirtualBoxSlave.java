@@ -32,7 +32,7 @@ public class VirtualBoxSlave extends Slave {
   public VirtualBoxSlave(
       String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
       ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-      String hostName, String virtualMachineName
+      String hostName, String virtualMachineName, String type
   ) throws Descriptor.FormException, IOException {
     super(
         name,
@@ -47,7 +47,7 @@ public class VirtualBoxSlave extends Slave {
     );
     this.hostName = hostName;
     this.virtualMachineName = virtualMachineName;
-    this.type = "vrdp"; // TODO should be configurable
+    this.type = type;
   }
 
   @Override
