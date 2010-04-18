@@ -38,11 +38,18 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     try {
       // Connect to VirtualBox host
       VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
-      // TODO machine may be null
+      if (machine == null) {
+        listener.fatalError("Unable to find specified machine");
+        return;
+      }
       // TODO check virtual machine state - if started, then do nothing
       // if no, then start
       log(listener, Messages.VirtualBoxLauncher_startVM(machine));
       long result = VirtualBoxUtils.startVm(machine, slave.getType());
+      if (result != 0) {
+        listener.fatalError("Unable to launch");
+        return;
+      }
       // TODO result may be != 0
     } catch (Throwable e) {
       listener.fatalError(e.getMessage(), e);
@@ -106,12 +113,17 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     try {
       // Connect to VirtualBox host
       VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
-      // TODO machine may be null
+      if (machine == null) {
+        listener.fatalError("Unable to find specified machine");
+      }
       // TODO check virtual machine state - if stopped, then do nothing
       // if no, then stop
       log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
       long result = VirtualBoxUtils.stopVm(machine);
-      // TODO result may be != 0
+      if (result != 0) {
+        listener.fatalError("Unable to stop");
+        return;
+      }
     } catch (Throwable e) {
       listener.fatalError(e.getMessage(), e);
     }
