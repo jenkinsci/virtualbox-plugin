@@ -45,7 +45,7 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
       // TODO check virtual machine state - if started, then do nothing
       // if no, then start
       log(listener, Messages.VirtualBoxLauncher_startVM(machine));
-      long result = VirtualBoxUtils.startVm(machine, slave.getType());
+      long result = VirtualBoxUtils.startVm(machine, slave.getVirtualMachineType());
       if (result != 0) {
         listener.fatalError("Unable to launch");
         return;

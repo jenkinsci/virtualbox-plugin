@@ -26,13 +26,13 @@ public class VirtualBoxSlave extends Slave {
 
   private final String hostName;
   private final String virtualMachineName;
-  private final String type;
+  private final String virtualMachineType;
 
   @DataBoundConstructor
   public VirtualBoxSlave(
       String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
       ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-      String hostName, String virtualMachineName, String type
+      String hostName, String virtualMachineName, String virtualMachineType
   ) throws Descriptor.FormException, IOException {
     super(
         name,
@@ -47,7 +47,7 @@ public class VirtualBoxSlave extends Slave {
     );
     this.hostName = hostName;
     this.virtualMachineName = virtualMachineName;
-    this.type = type;
+    this.virtualMachineType = virtualMachineType;
   }
 
   @Override
@@ -72,8 +72,8 @@ public class VirtualBoxSlave extends Slave {
   /**
    * @return type of virtual machine, can be headless or vrdp
    */
-  public String getType() {
-    return type;
+  public String getVirtualMachineType() {
+    return virtualMachineType;
   }
 
   @Override

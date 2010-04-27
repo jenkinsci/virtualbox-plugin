@@ -26,18 +26,10 @@
     </select>
   </f:entry>
 
-  <f:entry title="${%Type}" field="type">
-    <select class="setting-input" name="type" value="${it.type}">
-      <j:choose>
-        <j:when test="it.type == 'vrdp'">
-          <option value="headless">headless</option>
-          <option value="vrdp" selected="true">vrdp</option>
-        </j:when>
-        <j:otherwise>
-          <option value="headless" selected="true">headless</option>
-          <option value="vrdp">vrdp</option>
-        </j:otherwise>
-      </j:choose>
+  <f:entry title="${%Virtual Machine Type}" field="virtualMachineType">
+    <select class="setting-input" name="virtualMachineType" value="${it.virtualMachineType}">
+      <f:option value="headless" selected="${it.virtualMachineType == 'headless'}">headless</f:option>
+      <f:option value="vrdp" selected="${it.virtualMachineType == 'vrdp'}">vrdp</f:option>
     </select>
   </f:entry>
 
