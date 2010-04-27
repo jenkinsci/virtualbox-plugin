@@ -33,4 +33,16 @@
     <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</developerConnection>
     <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
   </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
