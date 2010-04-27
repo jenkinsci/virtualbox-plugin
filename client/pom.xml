@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>virtualbox-parent</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.2.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
