@@ -29,9 +29,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/virtualbox</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/trunk/hudson/plugins/virtualbox</url>
+    <connection>scm:git:git://github.com/hudson/virtualbox-plugin.git</connection>
+    <developerConnection>scm:git:git://github.com/hudson/virtualbox-plugin.git</developerConnection>
+    <url>https://github.com/hudson/virtualbox-plugin</url>
   </scm>
 
   <build>
