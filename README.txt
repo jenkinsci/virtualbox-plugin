@@ -1,3 +1,7 @@
-If you're wanting to make changes, please clone the git repository at
+This plugin integrates Jenkins with the VirtualBox 4.x virtual machine.
 
-git://github.com/hudson/virtualbox-plugin.git
+Cloned the git repository at 
+git://github.com/jenkins/virtualbox-plugin.git
+
+... and fixes JENKINS-8634
+http://issues.jenkins-ci.org/browse/JENKINS-8634

@@ -5,6 +5,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.virtualbox</groupId>
   <artifactId>vboxws</artifactId>
-  <version>3.1</version>
+  <version>4.0</version>
   <description>POM was created from install:install-file</description>
 </project>

@@ -1,9 +1,13 @@
 package hudson.plugins.virtualbox;
 
-import com.sun.xml.ws.commons.virtualbox_3_1.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.virtualbox_4_0.IMachine;
+import org.virtualbox_4_0.IProgress;
+import org.virtualbox_4_0.ISession;
+import org.virtualbox_4_0.MachineState;
+import org.virtualbox_4_0.VirtualBoxManager;
 
 /**
  * @author Evgeny Mandrikov
@@ -13,34 +17,25 @@ public final class VirtualBoxUtils {
   private VirtualBoxUtils() {
   }
 
-  static class ConnectionHolder {
-    IWebsessionManager manager;
-    IVirtualBox vbox;
-
-    public void disconnect() {
-      manager.disconnect(vbox);
-    }
-  }
-
-  private static ConnectionHolder connect(VirtualBoxCloud host) {
-    IWebsessionManager manager = new IWebsessionManager(host.getUrl());
-    ConnectionHolder holder = new ConnectionHolder();
-    holder.manager = manager;
-    holder.vbox = manager.logon(host.getUsername(), host.getPassword());
-    return holder;
+  private static VirtualBoxManager connect(VirtualBoxCloud host) {
+	  VirtualBoxManager mgr = VirtualBoxManager.createInstance("Unter Null - The Failure Epiphany - You Have Fallen From Grace");
+    mgr.connect(host.getUrl(), host.getUsername(), host.getPassword());
+    return mgr;
   }
 
   /**
+   * Get virtual machines installed on specified host.
+   * 
    * @param host VirtualBox host
    * @return list of virtual machines installed on specified host
    */
   public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host) {
     List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
-    ConnectionHolder holder = connect(host);
-    for (IMachine machine : holder.vbox.getMachines()) {
+    VirtualBoxManager mgr = connect(host);
+    for (IMachine machine : mgr.getVBox().getMachines()) {
       result.add(new VirtualBoxMachine(host, machine.getName()));
     }
-    holder.disconnect();
+    mgr.disconnect();
     return result;
   }
 
@@ -52,23 +47,30 @@ public final class VirtualBoxUtils {
    * @return result code
    */
   public static long startVm(VirtualBoxMachine vbMachine, String type) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    ISession session = holder.manager.getSessionObject(holder.vbox);
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
+    VirtualBoxManager mgr = connect(vbMachine.getHost());
+    IMachine machine;
+    try {
+      machine = mgr.getVBox().findMachine(vbMachine.getName());
+    } catch (Exception e) {
+      try {
+        machine = mgr.getVBox().findMachine(vbMachine.getName());
+      } catch (Exception e2) {
+        return -1;
+      }
+    }
+
     // check virtual machine state - if started, then do nothing
     // TODO actually this should be in VirtualBoxComputerLauncher
-    if (org.virtualbox_3_1.MachineState.RUNNING == machine.getState()) {
+    if (MachineState.Running == machine.getState()) {
       return 0;
     }
-    IProgress progress = holder.vbox.openRemoteSession(
-        session,
-        machine.getId(),
-        type, // sessionType (headless, vrdp)
-        "" // env
-    );
+    
+    ISession session = mgr.getSessionObject();
+    String env = "";
+    IProgress progress = machine.launchVMProcess(session, type, env);
     progress.waitForCompletion(-1);
     long result = progress.getResultCode();
-    holder.disconnect();
+    mgr.disconnect();
     return result;
   }
 
@@ -79,31 +81,38 @@ public final class VirtualBoxUtils {
    * @return result code
    */
   public static long stopVm(VirtualBoxMachine vbMachine) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    ISession session = holder.manager.getSessionObject(holder.vbox);
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
+    VirtualBoxManager mgr = connect(vbMachine.getHost());
+    IMachine machine = mgr.getVBox().findMachine(vbMachine.getName());
     // check virtual machine state - if not running, then do nothing
     // TODO actually this should be in VirtualBoxComputerLauncher
-    if (org.virtualbox_3_1.MachineState.RUNNING != machine.getState()) {
+    if (MachineState.Running != machine.getState()) {
       return 0;
     }
-    holder.vbox.openExistingSession(session, machine.getId());
+    ISession session;
+    try {
+      session = mgr.openMachineSession(machine);
+    } catch (Exception e) {
+      return -1;
+    }
+
     IProgress progress = session.getConsole().powerDown();
     progress.waitForCompletion(-1);
     long result = progress.getResultCode();
-    holder.disconnect();
+    mgr.disconnect();
     return result;
   }
 
   /**
+   * MAC Address of specified virtual machine.
+   * 
    * @param vbMachine virtual machine
    * @return MAC Address of specified virtual machine
    */
   public static String getMacAddress(VirtualBoxMachine vbMachine) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
+    VirtualBoxManager mgr = connect(vbMachine.getHost());
+    IMachine machine = mgr.getVBox().findMachine(vbMachine.getName());
     String macAddress = machine.getNetworkAdapter(0L).getMACAddress();
-    holder.disconnect();
+    mgr.disconnect();
     return macAddress;
   }
 }

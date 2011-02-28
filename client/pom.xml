@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>virtualbox-parent</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>virtualbox-client</artifactId>
   <packaging>jar</packaging>
-  <name>Hudson VirtualBox Client</name>
+  <name>Jenkins VirtualBox Client</name>
 
   <build>
     <plugins>

@@ -9,8 +9,8 @@
 
   <artifactId>virtualbox-parent</artifactId>
   <packaging>pom</packaging>
-  <name>Hudson VirtualBox Parent</name>
-  <version>0.3-SNAPSHOT</version>
+  <name>Jenkins VirtualBox Parent</name>
+  <version>0.4-SNAPSHOT</version>
 
   <developers>
     <developer>
