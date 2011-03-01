@@ -18,7 +18,7 @@
       <groupId>org.virtualbox</groupId>
       <artifactId>vboxws</artifactId>
       <version>4.0</version>
-      <classifier>java15</classifier>
+      <classifier>java16</classifier>
     </dependency>
   </dependencies>
 
