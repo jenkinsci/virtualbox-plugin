@@ -10,7 +10,7 @@ import org.virtualbox_4_0.MachineState;
 import org.virtualbox_4_0.VirtualBoxManager;
 
 /**
- * @author Evgeny Mandrikov
+ * @author Evgeny Mandrikov, Lars Gregori
  */
 public final class VirtualBoxUtils {
 
@@ -53,6 +53,7 @@ public final class VirtualBoxUtils {
       machine = mgr.getVBox().findMachine(vbMachine.getName());
     } catch (Exception e) {
       try {
+        // try again ("idea" taken from VirtualBox 3.x example)
         machine = mgr.getVBox().findMachine(vbMachine.getName());
       } catch (Exception e2) {
         return -1;
@@ -64,7 +65,7 @@ public final class VirtualBoxUtils {
     if (MachineState.Running == machine.getState()) {
       return 0;
     }
-    
+
     ISession session = mgr.getSessionObject();
     String env = "";
     IProgress progress = machine.launchVMProcess(session, type, env);
