@@ -8,7 +8,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>virtualbox</artifactId>
+  <artifactId>virtualbox4</artifactId>
   <packaging>hpi</packaging>
   <name>Jenkins VirtualBox Plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/VirtualBox+Plugin</url>
