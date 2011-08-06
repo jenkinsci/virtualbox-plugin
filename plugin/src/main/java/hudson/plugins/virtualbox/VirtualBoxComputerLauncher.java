@@ -82,7 +82,7 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
       log(listener, "Starting stage 2 launcher (" + delegate.getClass().getSimpleName() + ")");
       getCore().launch(computer, listener);
       log(listener, "Stage 2 launcher completed");
-      return true;
+      return computer.isOnline();
     } catch (IOException e) {
       log(listener, "Unable to launch: " + e.getMessage());
       return false;
