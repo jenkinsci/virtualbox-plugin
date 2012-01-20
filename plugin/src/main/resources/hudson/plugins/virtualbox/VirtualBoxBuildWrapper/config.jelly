@@ -3,7 +3,7 @@
 
   <f:entry title="${%VirtualBox Host}" field="hostName">
     <select class="setting-input" name="hostName" value="${instance.hostName}"
-            onchange="updateListBox(document.getElementsByName('virtualMachineName')[0],'${rootURL}/plugin/virtualbox/computerNameValues?hostName='+encode(this.value))">
+            onchange="updateListBox(document.getElementsByName('virtualMachineName')[0],'${rootURL}/plugin/virtualbox4/computerNameValues?hostName='+encode(this.value))">
       <option>Select host...</option>
       <j:forEach var="d" items="${descriptor.hosts}">
         <option selected="${d.displayName==it.hostName?'true':null}">
