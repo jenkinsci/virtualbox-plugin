@@ -1,8 +1,7 @@
 package hudson.plugins.virtualbox;
 
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.io.Serializable;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Evgeny Mandrikov

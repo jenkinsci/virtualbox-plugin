@@ -8,13 +8,13 @@ import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
 import hudson.util.FormValidation;
 import hudson.util.Scrambler;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * {@link Cloud} implementation for VirtualBox.
@@ -52,15 +52,21 @@ public class VirtualBoxCloud extends Cloud {
     return false;
   }
 
-  private List<VirtualBoxMachine> retrieveMachines() {
-    return VirtualBoxUtils.getMachines(this);
+  public synchronized List<VirtualBoxMachine> refreshVirtualMachinesList() {
+    virtualBoxMachines = VirtualBoxUtils.getMachines(this, new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
+    return virtualBoxMachines;
   }
 
-  public List<VirtualBoxMachine> getVirtualMachines() {
-    if (virtualBoxMachines == null) {
-      virtualBoxMachines = retrieveMachines();
+  public synchronized VirtualBoxMachine getVirtualMachine(String virtualMachineName) {
+    if (null == virtualBoxMachines) {
+      refreshVirtualMachinesList();
     }
-    return virtualBoxMachines;
+    for (VirtualBoxMachine machine: virtualBoxMachines) {
+      if (virtualMachineName.equals(machine.getName())) {
+        return machine;
+      }
+    }
+    return null;
   }
 
   @Extension
@@ -79,9 +85,10 @@ public class VirtualBoxCloud extends Cloud {
         @QueryParameter String username,
         @QueryParameter String password
     ) {
-      LOG.info("Testing connection to " + url + " with username " + username);
+      LOG.log(Level.INFO, "Testing connection to {0} with username {1}", new Object[]{url, username});
       try {
-        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password));
+        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password),
+                new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
         return FormValidation.ok(Messages.VirtualBoxHost_success());
       } catch (Throwable e) {
         return FormValidation.error(e.getMessage());

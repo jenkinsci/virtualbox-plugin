@@ -1,109 +1,88 @@
 package hudson.plugins.virtualbox;
 
-import com.sun.xml.ws.commons.virtualbox_3_1.*;
 
-import java.util.ArrayList;
+import com.sun.xml.ws.commons.virtualbox_3_1.IVirtualBox;
+import com.sun.xml.ws.commons.virtualbox_3_1.IWebsessionManager;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Evgeny Mandrikov
+ * @author Mihai Serban
  */
 public final class VirtualBoxUtils {
 
+  // public methods
+  public static long startVm(VirtualBoxMachine machine, String virtualMachineType, VirtualBoxLogger log) {
+    return getVboxControl(machine.getHost(), log).startVm(machine, virtualMachineType, log);
+  }
+
+  public static long stopVm(VirtualBoxMachine machine, VirtualBoxLogger log) {
+    return getVboxControl(machine.getHost(), log).stopVm(machine, log);
+  }
+
+  public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {
+    return getVboxControl(host, log).getMachines(host, log);
+  }
+
+  public static String getMacAddress(VirtualBoxMachine machine, VirtualBoxLogger log) {
+    return getVboxControl(machine.getHost(), log).getMacAddress(machine, log);
+  }
+
+  public static void disconnectAll() {
+    for (Map.Entry<String, VirtualBoxControl> entry: vboxControls.entrySet()) {
+      entry.getValue().disconnect();
+    }
+    vboxControls.clear();
+  }
+
+  // private methods
   private VirtualBoxUtils() {
   }
 
-  static class ConnectionHolder {
-    IWebsessionManager manager;
-    IVirtualBox vbox;
+  /**
+   * Cache connections to VirtualBox hosts
+   * TODO: keep the connections alive with a noop
+   */
+  private static HashMap<String, VirtualBoxControl> vboxControls = new HashMap<String, VirtualBoxControl>();
 
-    public void disconnect() {
-      manager.disconnect(vbox);
+  private synchronized static VirtualBoxControl getVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
+    VirtualBoxControl vboxControl = (VirtualBoxControl)vboxControls.get(host.toString());
+    if (null != vboxControl) {
+      if (vboxControl.isConnected()) {
+        return vboxControl;
+      }
+      log.logInfo("Lost connection to " + host.getUrl() + ", reconnecting");
+      vboxControls.remove(host.toString()); // force a reconnect
     }
+    vboxControl = createVboxControl(host, log);
+
+    vboxControls.put(host.toString(), vboxControl);
+    return vboxControl;
   }
 
-  private static ConnectionHolder connect(VirtualBoxCloud host) {
+  private static VirtualBoxControl createVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
+    VirtualBoxControl vboxControl = null;
+
+    log.logInfo("Trying to connect to " + host.getUrl() + ", user " + host.getUsername());
     IWebsessionManager manager = new IWebsessionManager(host.getUrl());
-    ConnectionHolder holder = new ConnectionHolder();
-    holder.manager = manager;
-    holder.vbox = manager.logon(host.getUsername(), host.getPassword());
-    return holder;
-  }
+    IVirtualBox vbox = manager.logon(host.getUsername(), host.getPassword());
+    String version = vbox.getVersion();
+    manager.disconnect(vbox);
 
-  /**
-   * @param host VirtualBox host
-   * @return list of virtual machines installed on specified host
-   */
-  public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host) {
-    List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
-    ConnectionHolder holder = connect(host);
-    for (IMachine machine : holder.vbox.getMachines()) {
-      result.add(new VirtualBoxMachine(host, machine.getName()));
+    log.logInfo("Creating connection to VirtualBox version " + version);
+    if (version.startsWith("4.1")) {
+      vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.0")) {
+      vboxControl = new VirtualBoxControlV40(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("3.")) {
+      vboxControl = new VirtualBoxControlV31(host.getUrl(), host.getUsername(), host.getPassword());
+    } else {
+      log.logError("VirtualBox version " + version + " not supported.");
+      throw new UnsupportedOperationException("VirtualBox version " + version + " not supported.");
     }
-    holder.disconnect();
-    return result;
-  }
 
-  /**
-   * Starts specified VirtualBox virtual machine.
-   *
-   * @param vbMachine virtual machine to start
-   * @param type      session type (can be headless, vrdp, gui, sdl)
-   * @return result code
-   */
-  public static long startVm(VirtualBoxMachine vbMachine, String type) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    ISession session = holder.manager.getSessionObject(holder.vbox);
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
-    // check virtual machine state - if started, then do nothing
-    // TODO actually this should be in VirtualBoxComputerLauncher
-    if (org.virtualbox_3_1.MachineState.RUNNING == machine.getState()) {
-      return 0;
-    }
-    IProgress progress = holder.vbox.openRemoteSession(
-        session,
-        machine.getId(),
-        type, // sessionType (headless, vrdp)
-        "" // env
-    );
-    progress.waitForCompletion(-1);
-    long result = progress.getResultCode();
-    holder.disconnect();
-    return result;
-  }
-
-  /**
-   * Stops specified VirtualBox virtual machine.
-   *
-   * @param vbMachine virtual machine to stop
-   * @return result code
-   */
-  public static long stopVm(VirtualBoxMachine vbMachine) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    ISession session = holder.manager.getSessionObject(holder.vbox);
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
-    // check virtual machine state - if not running, then do nothing
-    // TODO actually this should be in VirtualBoxComputerLauncher
-    if (org.virtualbox_3_1.MachineState.RUNNING != machine.getState()) {
-      return 0;
-    }
-    holder.vbox.openExistingSession(session, machine.getId());
-    IProgress progress = session.getConsole().powerDown();
-    progress.waitForCompletion(-1);
-    long result = progress.getResultCode();
-    holder.disconnect();
-    return result;
-  }
-
-  /**
-   * @param vbMachine virtual machine
-   * @return MAC Address of specified virtual machine
-   */
-  public static String getMacAddress(VirtualBoxMachine vbMachine) {
-    ConnectionHolder holder = connect(vbMachine.getHost());
-    IMachine machine = holder.vbox.findMachine(vbMachine.getName());
-    String macAddress = machine.getNetworkAdapter(0L).getMACAddress();
-    holder.disconnect();
-    return macAddress;
+    log.logInfo("Connected to VirtualBox version " + version + " on host " + host.getUrl());
+    return vboxControl;
   }
 }

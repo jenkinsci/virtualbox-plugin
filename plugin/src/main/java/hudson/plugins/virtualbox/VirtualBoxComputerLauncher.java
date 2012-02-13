@@ -4,7 +4,6 @@ import hudson.model.Descriptor;
 import hudson.model.TaskListener;
 import hudson.slaves.ComputerLauncher;
 import hudson.slaves.SlaveComputer;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +34,7 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
   @Override
   public void launch(SlaveComputer computer, TaskListener listener) throws IOException, InterruptedException {
     VirtualBoxSlave slave = ((VirtualBoxComputer) computer).getNode();
+    log(listener, "Launching node " + slave.getVirtualMachineName());
     try {
       // Connect to VirtualBox host
       VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
@@ -42,15 +42,12 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
         listener.fatalError("Unable to find specified machine");
         return;
       }
-      // TODO check virtual machine state - if started, then do nothing
-      // if no, then start
       log(listener, Messages.VirtualBoxLauncher_startVM(machine));
-      long result = VirtualBoxUtils.startVm(machine, slave.getVirtualMachineType());
+      long result = VirtualBoxUtils.startVm(machine, slave.getVirtualMachineType(), new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
       if (result != 0) {
         listener.fatalError("Unable to launch");
         return;
       }
-      // TODO result may be != 0
     } catch (Throwable e) {
       listener.fatalError(e.getMessage(), e);
       e.printStackTrace(listener.getLogger());
@@ -110,19 +107,17 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     log(listener, "Starting stage 2 afterDisconnect");
     getCore().afterDisconnect(computer, listener);
     log(listener, "Stage 2 afterDisconnect completed");
+
     try {
       // Connect to VirtualBox host
       VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
       if (machine == null) {
         listener.fatalError("Unable to find specified machine");
       }
-      // TODO check virtual machine state - if stopped, then do nothing
-      // if no, then stop
       log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
-      long result = VirtualBoxUtils.stopVm(machine);
+      long result = VirtualBoxUtils.stopVm(machine, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
       if (result != 0) {
         listener.fatalError("Unable to stop");
-        return;
       }
     } catch (Throwable e) {
       listener.fatalError(e.getMessage(), e);

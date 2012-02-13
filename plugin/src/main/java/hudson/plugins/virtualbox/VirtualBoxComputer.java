@@ -2,9 +2,8 @@ package hudson.plugins.virtualbox;
 
 import hudson.model.Slave;
 import hudson.slaves.SlaveComputer;
-import org.kohsuke.stapler.HttpResponse;
-
 import java.io.IOException;
+import org.kohsuke.stapler.HttpResponse;
 
 /**
  * @author Evgeny Mandrikov
