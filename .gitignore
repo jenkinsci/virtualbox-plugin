@@ -11,3 +11,7 @@ work
 .settings
 .classpath
 .project
+/lib/.index/
+
+# Netbeans project files
+plugin/nb-configuration.xml

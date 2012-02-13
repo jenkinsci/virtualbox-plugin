@@ -5,16 +5,16 @@ import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.slaves.Cloud;
 import hudson.util.ListBoxModel;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * TODO see https://jax-ws.dev.java.net/issues/show_bug.cgi?id=554
@@ -27,14 +27,16 @@ public class VirtualBoxPlugin extends Plugin {
 
   @Override
   public void start() throws Exception {
-    LOG.info("Starting " + getClass().getSimpleName());
+    LOG.log(Level.INFO, "Starting {0}", getClass().getSimpleName());
     super.start();
   }
 
   @Override
   public void stop() throws Exception {
-    LOG.info("Stopping " + getClass().getSimpleName());
+    LOG.log(Level.INFO, "Stopping {0}", getClass().getSimpleName());
     super.stop();
+    // close VirtualBox WEB sessions
+    VirtualBoxUtils.disconnectAll();
   }
 
   /**
@@ -75,7 +77,7 @@ public class VirtualBoxPlugin extends Plugin {
     if (host == null) {
       return Collections.emptyList();
     }
-    return host.getVirtualMachines();
+    return host.refreshVirtualMachinesList();
   }
 
   /**
@@ -91,12 +93,7 @@ public class VirtualBoxPlugin extends Plugin {
     if (host == null) {
       return null;
     }
-    for (VirtualBoxMachine machine : host.getVirtualMachines()) {
-      if (virtualMachineName.equals(machine.getName())) {
-        return machine;
-      }
-    }
-    return null;
+    return host.getVirtualMachine(virtualMachineName);
   }
 
   /**
@@ -134,18 +131,18 @@ public class VirtualBoxPlugin extends Plugin {
   @SuppressWarnings({"UnusedDeclaration"})
   public void doGetSlaveAgent(StaplerRequest req, StaplerResponse resp, @QueryParameter("macAddress") String macAddress)
       throws IOException {
-    LOG.info("Searching VirtualBox machine with MacAddress " + macAddress);
+    LOG.log(Level.INFO, "Searching VirtualBox machine with MacAddress {0}", macAddress);
     for (Node node : Hudson.getInstance().getNodes()) {
       if (node instanceof VirtualBoxSlave) {
         VirtualBoxSlave slave = (VirtualBoxSlave) node;
         VirtualBoxMachine vbox = getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
 
-        String vboxMacAddress = VirtualBoxUtils.getMacAddress(vbox);
-        LOG.info("MacAddress for " + slave.getNodeName() + " is " + vboxMacAddress);
+        String vboxMacAddress = VirtualBoxUtils.getMacAddress(vbox, new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
+        LOG.log(Level.INFO, "MacAddress for {0} is {1}", new Object[]{slave.getNodeName(), vboxMacAddress});
 
         if (macAddress.equalsIgnoreCase(vboxMacAddress)) {
           String url = Hudson.getInstance().getRootUrl() + "/computer/" + slave.getNodeName() + "/slave-agent.jnlp";
-          LOG.info("Found " + slave + " for Mac Address " + macAddress + ", sending redirect to " + url);
+          LOG.log(Level.INFO, "Found {0} for Mac Address {1}, sending redirect to {2}", new Object[]{slave, macAddress, url});
           resp.sendRedirect(url);
           return;
         }

@@ -32,7 +32,7 @@ public class Client {
     Document dom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
     String url = dom.getElementsByTagName("url").item(0).getTextContent();
 
-    System.out.println("Hudson: " + url);
+    System.out.println("Jenkins: " + url);
     hudson.remoting.Launcher.main("-jnlpUrl", getJnlp(url));
   }
 
