@@ -4,9 +4,8 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildWrapper;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.io.IOException;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Evgeny Mandrikov
@@ -26,16 +25,14 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
   public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
     VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
     listener.getLogger().println(Messages.VirtualBoxLauncher_startVM(machine));
-    VirtualBoxUtils.startVm(machine, "headless"); // TODO type
-    // TODO wait for start
+    VirtualBoxUtils.startVm(machine, "headless", new VirtualBoxTaskListenerLog(listener, "[VirtualBox] ")); // TODO type
 
     class EnvironmentImpl extends Environment {
       @Override
       public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
         VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
         listener.getLogger().println(Messages.VirtualBoxLauncher_stopVM(machine));
-        VirtualBoxUtils.stopVm(machine);
-        // TODO wait for stop
+        VirtualBoxUtils.stopVm(machine, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
         return true;
       }
     }

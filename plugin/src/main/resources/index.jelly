@@ -1,5 +1,5 @@
 <div>
-  This plugin integrates Hudson with
+  This plugin integrates Jenkins with
   <a href="http://www.virtualbox.org/">VirtualBox</a>
   virtual machine.
 </div>
