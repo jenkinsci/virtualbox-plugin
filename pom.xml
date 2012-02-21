@@ -8,15 +8,23 @@
   </parent>
 
   <artifactId>virtualbox-parent</artifactId>
+  <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Jenkins VirtualBox Parent</name>
-  <version>0.4-SNAPSHOT</version>
 
   <developers>
     <developer>
       <id>godin</id>
       <name>Evgeny Mandrikov</name>
       <timezone>+3</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>choas</id>
+      <name>Lars Gregori</name>
+      <timezone>+1</timezone>
       <roles>
         <role>Developer</role>
       </roles>

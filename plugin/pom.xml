@@ -11,6 +11,7 @@
   <artifactId>virtualbox</artifactId>
   <packaging>hpi</packaging>
   <name>Jenkins VirtualBox Plugin</name>
+  <description>Integrates Jenkins with VirtualBox virtual machine.</description>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/VirtualBox+Plugin</url>
 
   <dependencies>
