@@ -30,6 +30,8 @@
     <select class="setting-input" name="virtualMachineType" value="${it.virtualMachineType}">
       <f:option value="headless" selected="${it.virtualMachineType == 'headless'}">headless</f:option>
       <f:option value="vrdp" selected="${it.virtualMachineType == 'vrdp'}">vrdp</f:option>
+      <f:option value="gui" selected="${it.virtualMachineType == 'gui'}">gui</f:option>
+      <f:option value="sdl" selected="${it.virtualMachineType == 'sdl'}">sdl</f:option>
     </select>
   </f:entry>
 

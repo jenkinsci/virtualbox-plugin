@@ -69,7 +69,7 @@ public class VirtualBoxSlave extends Slave {
   }
 
   /**
-   * @return type of virtual machine, can be headless or vrdp
+   * @return type of virtual machine, can be headless, vrdp, gui, or sdl
    */
   public String getVirtualMachineType() {
     return virtualMachineType;
