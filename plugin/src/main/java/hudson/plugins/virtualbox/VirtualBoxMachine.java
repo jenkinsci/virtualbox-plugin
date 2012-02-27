@@ -9,12 +9,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VirtualBoxMachine implements Serializable, Comparable<VirtualBoxMachine> {
 
   private final VirtualBoxCloud host;
-  private final String name;
+  private final String machineName;
+  private final String machineId;
+  private final String snapshotId;
 
   @DataBoundConstructor
-  public VirtualBoxMachine(VirtualBoxCloud host, String name) {
+  public VirtualBoxMachine(VirtualBoxCloud host, String machineName, String machineId, String snapshotId) {
     this.host = host;
-    this.name = name;
+    this.machineName = machineName;
+    this.machineId = machineId;
+    this.snapshotId = snapshotId;
   }
 
   public VirtualBoxCloud getHost() {
@@ -22,22 +26,40 @@ public class VirtualBoxMachine implements Serializable, Comparable<VirtualBoxMac
   }
 
   public String getName() {
-    return name;
+    return machineName;
+  }
+
+  public String getMachineId() {
+    return machineId;
+  }
+
+  public String getMachineName() {
+    return machineName;
+  }
+
+  public String getSnapshotId() {
+    return snapshotId;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!(obj instanceof VirtualBoxMachine)) {
+    if (obj == null) {
       return false;
     }
-    VirtualBoxMachine that = (VirtualBoxMachine) obj;
-    if (host != null ? !host.equals(that.host) : that.host != null) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null) {
+    final VirtualBoxMachine other = (VirtualBoxMachine) obj;
+    if (this.host != other.host && (this.host == null || !this.host.equals(other.host))) {
+      return false;
+    }
+    if ((this.machineName == null) ? (other.machineName != null) : !this.machineName.equals(other.machineName)) {
+      return false;
+    }
+    if ((this.machineId == null) ? (other.machineId != null) : !this.machineId.equals(other.machineId)) {
+      return false;
+    }
+    if ((this.snapshotId == null) ? (other.snapshotId != null) : !this.snapshotId.equals(other.snapshotId)) {
       return false;
     }
     return true;
@@ -45,21 +67,17 @@ public class VirtualBoxMachine implements Serializable, Comparable<VirtualBoxMac
 
   @Override
   public int hashCode() {
-    int result = name != null ? name.hashCode() : 0;
-    return 31 * result + (host != null ? host.hashCode() : 0);
+    int hash = 3;
+    return hash;
   }
 
   public int compareTo(VirtualBoxMachine obj) {
     // TODO Godin compare host ? check on null?
-    return name.compareTo(obj.getName());
+    return machineName.compareTo(obj.getName());
   }
 
   @Override
   public String toString() {
-    return new StringBuffer()
-        .append("VirtualBoxMachine{")
-        .append("host=").append(host).append(",")
-        .append("name='").append(name).append("'")
-        .append("}").toString();
+    return "VirtualBoxMachine{" + "host=" + host + ", machineName=" + machineName + ", machineId=" + machineId + ", snapshotId=" + snapshotId + '}';
   }
 }
