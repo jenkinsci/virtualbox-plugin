@@ -26,11 +26,16 @@
       <artifactId>vboxws-40</artifactId>
       <version>4.0.8</version>
     </dependency>
-    <dependency>
-      <groupId>org.virtualbox</groupId>
-      <artifactId>vboxws-41</artifactId>
-      <version>4.1.8</version>
-    </dependency>
+      <dependency>
+          <groupId>org.virtualbox</groupId>
+          <artifactId>vboxws-41</artifactId>
+          <version>4.1.8</version>
+      </dependency>
+      <dependency>
+          <groupId>org.virtualbox</groupId>
+          <artifactId>vboxws-42</artifactId>
+          <version>4.2.0</version>
+      </dependency>
   </dependencies>
 
   <repositories>
