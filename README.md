@@ -1,4 +1,4 @@
-[![][VBLogo]] 
+![][VBLogo] 
 
 VirtualBox Plugin
 =================
