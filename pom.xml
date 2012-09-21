@@ -29,7 +29,16 @@
         <role>Developer</role>
       </roles>
     </developer>
+    <developer>
+      <id>hgomez</id>
+      <name>Henri Gomez</name>
+      <timezone>+1</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
   </developers>
+
 
   <modules>
     <module>plugin</module>
