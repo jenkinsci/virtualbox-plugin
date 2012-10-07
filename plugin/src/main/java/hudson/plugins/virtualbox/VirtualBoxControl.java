@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface VirtualBoxControl {
   public long startVm(VirtualBoxMachine machine, String virtualMachineType, VirtualBoxLogger log);
-  public long stopVm(VirtualBoxMachine machine, VirtualBoxLogger log);
+  public long stopVm(VirtualBoxMachine machine, String virtualMachineStopMode, VirtualBoxLogger log);
 
   public List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log);
   public String getMacAddress(VirtualBoxMachine machine, VirtualBoxLogger log);
