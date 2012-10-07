@@ -182,7 +182,7 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
             return -1;
         }
 
-        if (MachineState.Stuck == state || "stop".equals(stopMode)) {
+        if (MachineState.Stuck == state || "powerdown".equals(stopMode)) {
             // for Stuck state call powerDown and go to PoweredOff state
             progress = session.getConsole().powerDown();
         } else {

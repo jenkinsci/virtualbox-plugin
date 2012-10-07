@@ -38,7 +38,7 @@
   <f:entry title="${%Virtual Machine Stop Mode}" field="virtualMachineStopMode">
     <select class="setting-input" name="virtualMachineStopMode" value="${it.virtualMachineStopMode}">
       <f:option value="save" selected="${it.virtualMachineStopMode == 'save'}">save</f:option>
-      <f:option value="stop" selected="${it.virtualMachineStopMode == 'stop'}">stop</f:option>
+      <f:option value="powerdown" selected="${it.virtualMachineStopMode == 'powerdown'}">powerdown</f:option>
     </select>
   </f:entry>
 
