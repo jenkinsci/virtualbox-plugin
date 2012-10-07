@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>virtualbox-parent</artifactId>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
