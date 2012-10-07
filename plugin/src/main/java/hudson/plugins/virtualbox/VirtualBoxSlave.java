@@ -78,7 +78,7 @@ public class VirtualBoxSlave extends Slave {
   }
 
   /**
-   * @return type of stop mode for virtual machine stop, can be stop or pause
+   * @return type of stop mode for virtual machine, can be powerdown or pause
    */
   public String getVirtualMachineStopMode() {
     return virtualMachineStopMode;
