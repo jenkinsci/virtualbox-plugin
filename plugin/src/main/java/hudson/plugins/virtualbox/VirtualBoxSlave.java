@@ -26,12 +26,13 @@ public class VirtualBoxSlave extends Slave {
   private final String hostName;
   private final String virtualMachineName;
   private final String virtualMachineType;
-
+  private final String virtualMachineStopMode;
+  
   @DataBoundConstructor
   public VirtualBoxSlave(
       String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
       ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-      String hostName, String virtualMachineName, String virtualMachineType
+      String hostName, String virtualMachineName, String virtualMachineType, String virtualMachineStopMode
   ) throws Descriptor.FormException, IOException {
     super(
         name,
@@ -47,7 +48,30 @@ public class VirtualBoxSlave extends Slave {
     this.hostName = hostName;
     this.virtualMachineName = virtualMachineName;
     this.virtualMachineType = virtualMachineType;
+    this.virtualMachineStopMode = virtualMachineStopMode;
   }
+
+  public VirtualBoxSlave(
+	      String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
+	      ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
+	      String hostName, String virtualMachineName, String virtualMachineType
+	  ) throws Descriptor.FormException, IOException {
+	    super(
+	        name,
+	        nodeDescription,
+	        remoteFS,
+	        numExecutors,
+	        mode,
+	        labelString,
+	        new VirtualBoxComputerLauncher(delegateLauncher),
+	        retentionStrategy,
+	        nodeProperties
+	    );
+	    this.hostName = hostName;
+	    this.virtualMachineName = virtualMachineName;
+	    this.virtualMachineType = virtualMachineType;
+	    this.virtualMachineStopMode = "pause";
+	  }
 
   @Override
   public Computer createComputer() {
@@ -73,6 +97,13 @@ public class VirtualBoxSlave extends Slave {
    */
   public String getVirtualMachineType() {
     return virtualMachineType;
+  }
+
+  /**
+   * @return type of stop mode for virtual machine, can be powerdown or pause
+   */
+  public String getVirtualMachineStopMode() {
+    return virtualMachineStopMode;
   }
 
   @Override

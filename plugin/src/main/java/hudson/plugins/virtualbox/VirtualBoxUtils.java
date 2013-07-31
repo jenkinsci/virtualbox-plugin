@@ -17,8 +17,8 @@ public final class VirtualBoxUtils {
     return getVboxControl(machine.getHost(), log).startVm(machine, virtualMachineType, log);
   }
 
-  public static long stopVm(VirtualBoxMachine machine, VirtualBoxLogger log) {
-    return getVboxControl(machine.getHost(), log).stopVm(machine, log);
+  public static long stopVm(VirtualBoxMachine machine, String virtualMachineStopMode, String stopMode, VirtualBoxLogger log) {
+    return getVboxControl(machine.getHost(), log).stopVm(machine, virtualMachineStopMode, stopMode, log);
   }
 
   public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {
@@ -71,9 +71,11 @@ public final class VirtualBoxUtils {
     manager.disconnect(vbox);
 
     log.logInfo("Creating connection to VirtualBox version " + version);
-    if (version.startsWith("4.1")) {
-      vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
-    } else if (version.startsWith("4.0")) {
+      if (version.startsWith("4.2")) {
+       vboxControl = new VirtualBoxControlV42(host.getUrl(), host.getUsername(), host.getPassword());
+      } else if (version.startsWith("4.1")) {
+       vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
+      } else if (version.startsWith("4.0")) {
       vboxControl = new VirtualBoxControlV40(host.getUrl(), host.getUsername(), host.getPassword());
     } else if (version.startsWith("3.")) {
       vboxControl = new VirtualBoxControlV31(host.getUrl(), host.getUsername(), host.getPassword());

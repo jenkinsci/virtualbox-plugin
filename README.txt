@@ -26,3 +26,8 @@ git branch --track snap origin/snap
 ## tracks the (see also ################################################################################)
 
 git checkout snap
+git://github.com/jenkinsci/virtualbox-plugin.git
+
+Wiki page at 
+
+https://wiki.jenkins-ci.org/display/JENKINS/VirtualBox+Plugin
