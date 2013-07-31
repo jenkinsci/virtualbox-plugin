@@ -8,3 +8,15 @@ mvn deploy:deploy-file
     -Dfile=/PATH_TO_DOWNLOADED_JAR/vboxjws-4.1.8.jar
     -Durl=file:/PATH_TO_PLUGIN_SOURCES/virtualbox-plugin/plugin/../lib
     -DrepositoryId=virtualbox-libs
+
+
+Command used to install vboxws.jar version 4.2.0 to local repository:
+
+mvn deploy:deploy-file
+    -DgroupId=org.virtualbox
+    -DartifactId=vboxws-42
+    -Dversion=4.2.0
+    -Dpackaging=jar
+    -Dfile=/PATH_TO_DOWNLOADED_JAR/vboxjws-4.2.0.jar
+    -Durl=file:/PATH_TO_PLUGIN_SOURCES/virtualbox-plugin/plugin/../lib
+    -DrepositoryId=virtualbox-libs
