@@ -17,8 +17,8 @@ public final class VirtualBoxUtils {
     return getVboxControl(machine.getHost(), log).startVm(machine, virtualMachineType, log);
   }
 
-  public static long stopVm(VirtualBoxMachine machine, String virtualMachineStopMode, String stopMode, VirtualBoxLogger log) {
-    return getVboxControl(machine.getHost(), log).stopVm(machine, virtualMachineStopMode, stopMode, log);
+  public static long stopVm(VirtualBoxMachine machine, String virtualMachineStopMode, VirtualBoxLogger log) {
+    return getVboxControl(machine.getHost(), log).stopVm(machine, virtualMachineStopMode, log);
   }
 
   public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {

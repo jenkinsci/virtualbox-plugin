@@ -42,7 +42,7 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
     public synchronized List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {
         List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
         for (IMachine machine : vbox.getMachines()) {
-            result.add(new VirtualBoxMachine(host, machine.getName()));
+            result.add(new VirtualBoxMachine(host, machine.getName(), "", "")); //TODO
         }
         return result;
     }
