@@ -43,6 +43,7 @@ public final class VirtualBoxUtils {
   /**
    * Cache connections to VirtualBox hosts
    * TODO: keep the connections alive with a noop
+   * TODO: rewrite duplicate code
    */
   private static HashMap<String, VirtualBoxControl> vboxControls = new HashMap<String, VirtualBoxControl>();
 

@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.virtualbox_4_2.*;
 
+
 /**
- * @author Mihai Serban
+ * @author Mihai Serban, Oscar Carlsson
  */
 public final class VirtualBoxControlV42 implements VirtualBoxControl {
 
@@ -42,11 +43,48 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
     public synchronized List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {
         List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
         for (IMachine machine : vbox.getMachines()) {
-            result.add(new VirtualBoxMachine(host, machine.getName(), "", "")); //TODO
+            result.add(new VirtualBoxMachine(host, machine.getName(), machine.getId(), null)); //TODO snapshot.id!
+            if (machine.getSnapshotCount() > 0) {
+                ISnapshot root = findRootSnapshot(machine);
+                String machineName = machine.getName();
+
+                List<SnapshotData> snapshots = fillSnapshot(new ArrayList<SnapshotData>(), "", root);
+                for (SnapshotData snapshot : snapshots){
+                    result.add(new VirtualBoxMachine(host, machineName + "/" + snapshot.name, machine.getId(), snapshot.id));
+                }
+            }
         }
         return result;
     }
 
+    private class SnapshotData {
+        String name;
+        String id;
+    }
+    private static ISnapshot findRootSnapshot(IMachine machine){
+        ISnapshot root = machine.getCurrentSnapshot();
+        if (root.getParent() != null) {
+            root = root.getParent();
+        }
+        return root;
+    }
+
+    private List<SnapshotData> fillSnapshot(List<SnapshotData> snapshotList, String snapshotPath, ISnapshot snapshot){
+        if (snapshot != null){
+            SnapshotData snapshotData = new SnapshotData();
+            snapshotData.name = snapshot.getName();//snapshotPath + "/" + snapshot.getName();
+            snapshotData.id = snapshot.getId();
+            snapshotList.add(snapshotData);
+
+            if (snapshot.getChildren() != null){
+                for (ISnapshot child : snapshot.getChildren()){
+                    // call fillSnapshot recursive
+                    snapshotList = fillSnapshot(snapshotList, snapshotData.name, child);
+                }
+            }
+        }
+        return snapshotList;
+    }
     /**
      * Starts specified VirtualBox virtual machine.
      *
@@ -56,10 +94,19 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
      * @return result code
      */
     public synchronized long startVm(VirtualBoxMachine vbMachine, String type, VirtualBoxLogger log) {
-        IMachine machine = vbox.findMachine(vbMachine.getName());
+        String machineName = vbMachine.getName();
+        String machineId = vbMachine.getMachineId();
+        String snapshotId = vbMachine.getSnapshotId();
+
+        IMachine machine = vbox.findMachine(machineId);
         if (null == machine) {
             log.logFatalError("Cannot find node: " + vbMachine.getName());
             return -1;
+        }
+
+        ISnapshot snapshot = null;
+        if (snapshotId != null) {
+            snapshot = machine.findSnapshot(snapshotId);
         }
 
         // states diagram: https://www.virtualbox.org/sdkref/_virtual_box_8idl.html#80b08f71210afe16038e904a656ed9eb
@@ -78,6 +125,11 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
 
         if (MachineState.Running == state) {
             log.logInfo("node " + vbMachine.getName() + " in state " + state.toString());
+
+            if (snapshotId != null) {
+                log.logInfo("node " + machineName + " already started and snapshot could not be restored");
+                return -1;
+            }
             log.logInfo("node " + vbMachine.getName() + " started");
             return 0;
         }
@@ -123,11 +175,23 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
         log.logInfo("starting node " + vbMachine.getName() + " from state " + state.toString());
 
         // powerUp from Saved, Aborted or PoweredOff states
-        session = getSession(null);
         String env = "";
-        progress = machine.launchVMProcess(session, type, env);
+        if (snapshot == null){
+            session = getSession(null);
+            progress = machine.launchVMProcess(session, type, env);
+        }else {
+            session = getSession(machine);
+            progress = session.getConsole().restoreSnapshot(snapshot);
+            progress.waitForCompletion(-1);
+
+            session.unlockMachine();
+            session = getSession(null);
+            progress = machine.launchVMProcess(session, type, env);
+            //TODO DUPLICATE
+        }
+
         progress.waitForCompletion(-1);
-        long result = progress.getResultCode();
+        long result = progress.getResultCode();      //TODO: -2312312
         releaseSession(session, machine);
 
         if (0 != result) {
@@ -147,10 +211,20 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
      * @return result code
      */
     public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
-        IMachine machine = vbox.findMachine(vbMachine.getName());
+        String machineName = vbMachine.getMachineName(); //TODO replace with these
+        String machineId = vbMachine.getMachineId();
+        String snapshotId = vbMachine.getSnapshotId();
+
+        IMachine machine = vbox.findMachine(machineId);
+
         if (null == machine) {
             log.logFatalError("Cannot find node: " + vbMachine.getName());
             return -1;
+        }
+
+        ISnapshot snapshot = null;
+        if (snapshotId != null) {
+            snapshot = machine.findSnapshot(snapshotId);
         }
 
         // states diagram: https://www.virtualbox.org/sdkref/_virtual_box_8idl.html#80b08f71210afe16038e904a656ed9eb
@@ -185,6 +259,14 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
         if (MachineState.Stuck == state || "powerdown".equals(stopMode)) {
             // for Stuck state call powerDown and go to PoweredOff state
             progress = session.getConsole().powerDown();
+        }else if (snapshot != null) {
+            progress = session.getConsole().powerDown();
+            progress.waitForCompletion(-1);
+
+            session = getSession(machine);
+            progress = session.getConsole().restoreSnapshot(snapshot);
+            progress.waitForCompletion(-1);
+            session.unlockMachine();
         } else {
             // Running or Paused
             progress = session.getConsole().saveState();
