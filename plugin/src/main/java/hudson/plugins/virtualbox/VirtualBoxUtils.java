@@ -48,19 +48,21 @@ public final class VirtualBoxUtils {
   private static HashMap<String, VirtualBoxControl> vboxControls = new HashMap<String, VirtualBoxControl>();
 
   private synchronized static VirtualBoxControl getVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
-    VirtualBoxControl vboxControl = (VirtualBoxControl)vboxControls.get(host.toString());
-    if (null != vboxControl) {
-      if (vboxControl.isConnected()) {
-        return vboxControl;
-      }
-      log.logInfo("Lost connection to " + host.getUrl() + ", reconnecting");
-      vboxControls.remove(host.toString()); // force a reconnect
-    }
-    vboxControl = createVboxControl(host, log);
+        VirtualBoxControl vboxControl = (VirtualBoxControl)vboxControls.get(host.toString());
 
-    vboxControls.put(host.toString(), vboxControl);
-    return vboxControl;
-  }
+        if  (vboxControl != null && !vboxControl.isConnected()){
+            log.logInfo("Lost connection to " + host.getUrl() + ", reconnecting");
+            vboxControls.remove(host.toString()); // force a reconnect
+        }
+
+        if (! (vboxControl != null && vboxControl.isConnected()) ) {
+            vboxControl = createVboxControl(host, log);
+            vboxControls.put(host.toString(), vboxControl);
+        }
+
+        return vboxControl;
+    }
+
 
   private static VirtualBoxControl createVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
     VirtualBoxControl vboxControl = null;
@@ -72,11 +74,11 @@ public final class VirtualBoxUtils {
     manager.disconnect(vbox);
 
     log.logInfo("Creating connection to VirtualBox version " + version);
-      if (version.startsWith("4.2")) {
-       vboxControl = new VirtualBoxControlV42(host.getUrl(), host.getUsername(), host.getPassword());
-      } else if (version.startsWith("4.1")) {
-       vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
-      } else if (version.startsWith("4.0")) {
+    if (version.startsWith("4.2")) {
+      vboxControl = new VirtualBoxControlV42(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.1")) {
+      vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.0")) {
       vboxControl = new VirtualBoxControlV40(host.getUrl(), host.getUsername(), host.getPassword());
     } else if (version.startsWith("3.")) {
       vboxControl = new VirtualBoxControlV31(host.getUrl(), host.getUsername(), host.getPassword());
