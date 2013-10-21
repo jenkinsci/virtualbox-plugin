@@ -56,21 +56,20 @@ public class VirtualBoxSlave extends Slave {
       ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
       String hostName, String virtualMachineName, String virtualMachineType
   ) throws Descriptor.FormException, IOException {
-    super(
+    this(
         name,
         nodeDescription,
         remoteFS,
         numExecutors,
         mode,
         labelString,
-        new VirtualBoxComputerLauncher(delegateLauncher),
+        delegateLauncher,
         retentionStrategy,
-        nodeProperties
-    );
-    this.hostName = hostName;
-    this.virtualMachineName = virtualMachineName;
-    this.virtualMachineType = virtualMachineType;
-    this.virtualMachineStopMode = "pause";
+        nodeProperties,
+        hostName,
+        virtualMachineName,
+        virtualMachineType,
+        "pause");
   }
 
   @Override
