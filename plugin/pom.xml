@@ -36,6 +36,11 @@
           <artifactId>vboxws-42</artifactId>
           <version>4.2.0</version>
       </dependency>
+      <dependency>
+          <groupId>org.virtualbox</groupId>
+          <artifactId>vboxws-43</artifactId>
+          <version>4.3.0</version>
+      </dependency>
   </dependencies>
 
   <repositories>
