@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>virtualbox-parent</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.7</version>
   <packaging>pom</packaging>
   <name>Jenkins VirtualBox Parent</name>
 
@@ -49,7 +49,7 @@
     <connection>scm:git:git://github.com/jenkinsci/virtualbox-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/virtualbox-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/virtualbox-plugin</url>
-    <tag>HEAD</tag>
+    <tag>virtualbox-parent-0.7</tag>
   </scm>
 
   <properties>
