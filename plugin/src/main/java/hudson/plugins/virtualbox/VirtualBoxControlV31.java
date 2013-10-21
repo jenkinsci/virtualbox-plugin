@@ -103,7 +103,7 @@ public final class VirtualBoxControlV31 implements VirtualBoxControl {
    * @param vbMachine virtual machine to stop
    * @return result code
    */
-  public synchronized long stopVm(VirtualBoxMachine vbMachine, VirtualBoxLogger log) {
+  public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
     ConnectionHolder holder = connect(hostUrl, userName, password);
     IMachine machine = holder.vbox.findMachine(vbMachine.getName());
     if (org.virtualbox_3_1.MachineState.RUNNING != machine.getState()) {

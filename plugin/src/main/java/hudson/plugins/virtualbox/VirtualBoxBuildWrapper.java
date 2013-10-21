@@ -32,7 +32,7 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
       public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
         VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(getHostName(), getVirtualMachineName());
         listener.getLogger().println(Messages.VirtualBoxLauncher_stopVM(machine));
-        VirtualBoxUtils.stopVm(machine, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
+        VirtualBoxUtils.stopVm(machine, "pause", new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
         return true;
       }
     }
