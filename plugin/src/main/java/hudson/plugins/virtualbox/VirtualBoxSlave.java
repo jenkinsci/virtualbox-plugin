@@ -41,7 +41,7 @@ public class VirtualBoxSlave extends Slave {
         numExecutors,
         mode,
         labelString,
-        new VirtualBoxComputerLauncher(delegateLauncher),
+        new VirtualBoxComputerLauncher(delegateLauncher, hostName, virtualMachineName, virtualMachineType, virtualMachineStopMode),
         retentionStrategy,
         nodeProperties
     );
