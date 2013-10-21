@@ -25,6 +25,8 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
 
   private static final int SECOND = 1000;
 
+  private transient VirtualBoxMachine virtualMachine;
+
   private ComputerLauncher delegate;
 
   private String hostName;
@@ -43,6 +45,11 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     this.virtualMachineName = virtualMachineName;
     this.virtualMachineType = virtualMachineType;
     this.virtualMachineStopMode = virtualMachineStopMode;
+    lookupVirtualMachineHandle();
+  }
+
+  private void lookupVirtualMachineHandle() {
+    virtualMachine = VirtualBoxPlugin.getVirtualBoxMachine(hostName, virtualMachineName);
   }
 
   @Override
@@ -50,13 +57,16 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     log(listener, "Launching node " + virtualMachineName);
     try {
       // Connect to VirtualBox host
-      VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(hostName, virtualMachineName);
-      if (machine == null) {
-        listener.fatalError("Unable to find specified machine");
-        return;
+      if (virtualMachine == null) {
+        listener.getLogger().println("Virtual machine " + virtualMachineName + " not found, retrying ...");
+        lookupVirtualMachineHandle();
+        if (virtualMachine == null) {
+          listener.fatalError("Unable to find specified machine (" + virtualMachineName + ") on host " + hostName);
+          throw new Exception("Unable to find specified machine (" + virtualMachineName + ") on host " + hostName);
+        }
       }
-      log(listener, Messages.VirtualBoxLauncher_startVM(machine));
-      long result = VirtualBoxUtils.startVm(machine, virtualMachineType, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
+      log(listener, Messages.VirtualBoxLauncher_startVM(virtualMachine));
+      long result = VirtualBoxUtils.startVm(virtualMachine, virtualMachineType, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
       if (result != 0) {
         listener.fatalError("Unable to launch");
         return;
@@ -121,13 +131,8 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
     log(listener, "Stage 2 afterDisconnect completed");
 
     try {
-      // Connect to VirtualBox host
-      VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(hostName, virtualMachineName);
-      if (machine == null) {
-        listener.fatalError("Unable to find specified machine");
-      }
-      log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
-      long result = VirtualBoxUtils.stopVm(machine, virtualMachineStopMode, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
+      log(listener, Messages.VirtualBoxLauncher_stopVM(virtualMachine));
+      long result = VirtualBoxUtils.stopVm(virtualMachine, virtualMachineStopMode, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
       if (result != 0) {
         listener.fatalError("Unable to stop");
       }
