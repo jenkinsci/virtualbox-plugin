@@ -27,7 +27,7 @@ public class VirtualBoxSlave extends Slave {
   private final String virtualMachineName;
   private final String virtualMachineType;
   private final String virtualMachineStopMode;
-  
+
   @DataBoundConstructor
   public VirtualBoxSlave(
       String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
@@ -41,7 +41,7 @@ public class VirtualBoxSlave extends Slave {
         numExecutors,
         mode,
         labelString,
-        new VirtualBoxComputerLauncher(delegateLauncher),
+        new VirtualBoxComputerLauncher(delegateLauncher, hostName, virtualMachineName, virtualMachineType, virtualMachineStopMode),
         retentionStrategy,
         nodeProperties
     );
@@ -52,26 +52,25 @@ public class VirtualBoxSlave extends Slave {
   }
 
   public VirtualBoxSlave(
-	      String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
-	      ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-	      String hostName, String virtualMachineName, String virtualMachineType
-	  ) throws Descriptor.FormException, IOException {
-	    super(
-	        name,
-	        nodeDescription,
-	        remoteFS,
-	        numExecutors,
-	        mode,
-	        labelString,
-	        new VirtualBoxComputerLauncher(delegateLauncher),
-	        retentionStrategy,
-	        nodeProperties
-	    );
-	    this.hostName = hostName;
-	    this.virtualMachineName = virtualMachineName;
-	    this.virtualMachineType = virtualMachineType;
-	    this.virtualMachineStopMode = "pause";
-	  }
+      String name, String nodeDescription, String remoteFS, String numExecutors, Mode mode, String labelString,
+      ComputerLauncher delegateLauncher, RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
+      String hostName, String virtualMachineName, String virtualMachineType
+  ) throws Descriptor.FormException, IOException {
+    this(
+        name,
+        nodeDescription,
+        remoteFS,
+        numExecutors,
+        mode,
+        labelString,
+        delegateLauncher,
+        retentionStrategy,
+        nodeProperties,
+        hostName,
+        virtualMachineName,
+        virtualMachineType,
+        "pause");
+  }
 
   @Override
   public Computer createComputer() {
@@ -116,7 +115,6 @@ public class VirtualBoxSlave extends Slave {
    *
    * @return original launcher
    */
-  @SuppressWarnings({"UnusedDeclaration"})
   public ComputerLauncher getDelegateLauncher() {
     return getLauncher().getCore();
   }
@@ -133,7 +131,6 @@ public class VirtualBoxSlave extends Slave {
      *
      * @see VirtualBoxPlugin#getHost(String)
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
       return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
     }
@@ -143,7 +140,6 @@ public class VirtualBoxSlave extends Slave {
      *
      * @see VirtualBoxPlugin#getHosts()
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public List<VirtualBoxCloud> getHosts() {
       return VirtualBoxPlugin.getHosts();
     }
@@ -152,7 +148,6 @@ public class VirtualBoxSlave extends Slave {
      * For UI.
      * TODO Godin: doesn't work
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public FormValidation doCheckHostName(@QueryParameter String value) {
       LOG.info("Perform on the fly check - hostName");
       if (Util.fixEmptyAndTrim(value) == null) {
@@ -165,7 +160,6 @@ public class VirtualBoxSlave extends Slave {
      * For UI.
      * TODO Godin: doesn't work
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public FormValidation doCheckVirtualMachineName(@QueryParameter String value) {
       LOG.info("Perform on the fly check - virtualMachineName");
       if (Util.fixEmptyAndTrim(value) == null) {
