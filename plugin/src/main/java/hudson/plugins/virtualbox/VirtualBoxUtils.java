@@ -43,23 +43,26 @@ public final class VirtualBoxUtils {
   /**
    * Cache connections to VirtualBox hosts
    * TODO: keep the connections alive with a noop
+   * TODO: rewrite duplicate code
    */
   private static HashMap<String, VirtualBoxControl> vboxControls = new HashMap<String, VirtualBoxControl>();
 
   private synchronized static VirtualBoxControl getVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
-    VirtualBoxControl vboxControl = (VirtualBoxControl)vboxControls.get(host.toString());
-    if (null != vboxControl) {
-      if (vboxControl.isConnected()) {
-        return vboxControl;
-      }
-      log.logInfo("Lost connection to " + host.getUrl() + ", reconnecting");
-      vboxControls.remove(host.toString()); // force a reconnect
-    }
-    vboxControl = createVboxControl(host, log);
+        VirtualBoxControl vboxControl = (VirtualBoxControl)vboxControls.get(host.toString());
 
-    vboxControls.put(host.toString(), vboxControl);
-    return vboxControl;
-  }
+        if  (vboxControl != null && !vboxControl.isConnected()){
+            log.logInfo("Lost connection to " + host.getUrl() + ", reconnecting");
+            vboxControls.remove(host.toString()); // force a reconnect
+        }
+
+        if (! (vboxControl != null && vboxControl.isConnected()) ) {
+            vboxControl = createVboxControl(host, log);
+            vboxControls.put(host.toString(), vboxControl);
+        }
+
+        return vboxControl;
+    }
+
 
   private static VirtualBoxControl createVboxControl(VirtualBoxCloud host, VirtualBoxLogger log) {
     VirtualBoxControl vboxControl = null;
