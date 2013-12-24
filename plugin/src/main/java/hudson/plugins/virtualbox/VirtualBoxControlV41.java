@@ -207,7 +207,7 @@ public final class VirtualBoxControlV41 implements VirtualBoxControl {
    * @param log
    * @return result code
    */
-  public synchronized long stopVm(VirtualBoxMachine vbMachine, VirtualBoxLogger log) {
+  public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
     String machineName = vbMachine.getName();
     String machineId = vbMachine.getMachineId();
     String snapshotId = vbMachine.getSnapshotId();
@@ -252,7 +252,7 @@ public final class VirtualBoxControlV41 implements VirtualBoxControl {
       return -1;
     }
 
-    if (MachineState.Stuck == state) {
+    if (MachineState.Stuck == state || "powerdown".equals(stopMode)) {
       // for Stuck state call powerDown and go to PoweredOff state
       progress = session.getConsole().powerDown();
     } else if (snapshot != null) {
