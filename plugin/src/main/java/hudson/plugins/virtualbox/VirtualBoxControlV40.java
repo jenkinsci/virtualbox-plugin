@@ -207,17 +207,12 @@ public final class VirtualBoxControlV40 implements VirtualBoxControl {
    * @param log
    * @return result code
    */
-//<<<<<<< HEAD
   public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
     String machineName = vbMachine.getName();
     String machineId = vbMachine.getMachineId();
     String snapshotId = vbMachine.getSnapshotId();
 
     IMachine machine = vbox.findMachine(machineId);
-//=======
-//  public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
-//    IMachine machine = vbox.findMachine(vbMachine.getName());
-//>>>>>>> master
     if (null == machine) {
       log.logFatalError("Cannot find node: " + machineName);
       return -1;
