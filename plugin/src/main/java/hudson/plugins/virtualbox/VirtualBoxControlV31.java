@@ -62,7 +62,7 @@ public final class VirtualBoxControlV31 implements VirtualBoxControl {
     List<VirtualBoxMachine> result = new ArrayList<VirtualBoxMachine>();
     ConnectionHolder holder = connect(hostUrl, userName, password);
     for (IMachine machine : holder.vbox.getMachines()) {
-      result.add(new VirtualBoxMachine(host, machine.getName()));
+      result.add(new VirtualBoxMachine(host, machine.getName(), machine.getId(), null));
     }
     holder.disconnect();
     return result;
