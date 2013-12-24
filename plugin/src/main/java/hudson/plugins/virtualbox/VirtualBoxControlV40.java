@@ -207,12 +207,12 @@ public final class VirtualBoxControlV40 implements VirtualBoxControl {
    * @param log
    * @return result code
    */
-  public synchronized long stopVm(VirtualBoxMachine vbMachine, VirtualBoxLogger log) {
+  public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
     String machineName = vbMachine.getName();
     String machineId = vbMachine.getMachineId();
     String snapshotId = vbMachine.getSnapshotId();
 
-    IMachine machine = vbox.findMachine(machineId);
+    IMachine machine = vbox.findMachine(vbMachine.getName());
     if (null == machine) {
       log.logFatalError("Cannot find node: " + machineName);
       return -1;
@@ -252,7 +252,7 @@ public final class VirtualBoxControlV40 implements VirtualBoxControl {
       return -1;
     }
 
-    if (MachineState.Stuck == state) {
+    if (MachineState.Stuck == state || "powerdown".equals(stopMode)) {
       // for Stuck state call powerDown and go to PoweredOff state
       progress = session.getConsole().powerDown();
     } else if (snapshot != null) {
