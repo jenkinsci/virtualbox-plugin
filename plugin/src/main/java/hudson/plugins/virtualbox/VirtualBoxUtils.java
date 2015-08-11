@@ -1,6 +1,5 @@
 package hudson.plugins.virtualbox;
 
-
 import com.sun.xml.ws.commons.virtualbox_3_1.IVirtualBox;
 import com.sun.xml.ws.commons.virtualbox_3_1.IWebsessionManager;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public final class VirtualBoxUtils {
   }
 
   public static void disconnectAll() {
-    for (Map.Entry<String, VirtualBoxControl> entry: vboxControls.entrySet()) {
+    for (Map.Entry<String, VirtualBoxControl> entry : vboxControls.entrySet()) {
       entry.getValue().disconnect();
     }
     vboxControls.clear();
@@ -71,13 +70,15 @@ public final class VirtualBoxUtils {
     manager.disconnect(vbox);
 
     log.logInfo("Creating connection to VirtualBox version " + version);
-      if (version.startsWith("4.3")) {
-       vboxControl = new VirtualBoxControlV43(host.getUrl(), host.getUsername(), host.getPassword());
-      } else if (version.startsWith("4.2")) {
-       vboxControl = new VirtualBoxControlV42(host.getUrl(), host.getUsername(), host.getPassword());
-      } else if (version.startsWith("4.1")) {
-       vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
-      } else if (version.startsWith("4.0")) {
+    if (version.startsWith("5.0")) {
+      vboxControl = new VirtualBoxControlV50(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.3")) {
+      vboxControl = new VirtualBoxControlV43(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.2")) {
+      vboxControl = new VirtualBoxControlV42(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.1")) {
+      vboxControl = new VirtualBoxControlV41(host.getUrl(), host.getUsername(), host.getPassword());
+    } else if (version.startsWith("4.0")) {
       vboxControl = new VirtualBoxControlV40(host.getUrl(), host.getUsername(), host.getPassword());
     } else if (version.startsWith("3.")) {
       vboxControl = new VirtualBoxControlV31(host.getUrl(), host.getUsername(), host.getPassword());
