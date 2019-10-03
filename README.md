@@ -7,7 +7,7 @@ It currently supports VirtualBox versions 5.2 and 6.0 (the versions actively mai
 
 The minimum version of Jenkins required for this plugin is 2.60.1.
 
-Sources
+Contributing
 -------
 
 If you're wanting to make changes, please fork the repository and submit a pull request.
