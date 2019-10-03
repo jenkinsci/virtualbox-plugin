@@ -3,14 +3,14 @@ VirtualBox Plugin
 
 This plugin manage slaves using VirtualBox vms with its WebServer API.
 
-It currently supports VirtualBox versions 3 to 6.
+It currently supports VirtualBox versions 5.2 and 6.0 (the versions actively maintained by Oracle).
 
 Sources
 -------
 
 If you're wanting to make changes, please clone the git repository at [sources]
 
-git://github.com/bjones14/virtualbox-plugin.git
+git://github.com/jenkinsci/virtualbox-plugin.git
 
 Documentation
 -------------
