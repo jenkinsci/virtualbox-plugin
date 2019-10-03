@@ -16,7 +16,7 @@ git://github.com/jenkinsci/virtualbox-plugin.git
 
 To Do
 -------------
-Add support for Snapshots
+* Add support for Snapshots
 
 
 Documentation
