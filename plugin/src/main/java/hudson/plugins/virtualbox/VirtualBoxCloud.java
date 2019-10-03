@@ -1,13 +1,12 @@
 package hudson.plugins.virtualbox;
 
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.Label;
 import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
 import hudson.util.FormValidation;
-import hudson.util.Scrambler;
+import hudson.util.Secret;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +26,8 @@ public class VirtualBoxCloud extends Cloud {
 
   private final String url;
   private final String username;
-  private final String password;
+  private final Secret password;
+  private final Integer activeMachineLimit;
 
   /**
    * Lazily computed list of virtual machines from this host.
@@ -35,11 +35,12 @@ public class VirtualBoxCloud extends Cloud {
   private transient List<VirtualBoxMachine> virtualBoxMachines = null;
 
   @DataBoundConstructor
-  public VirtualBoxCloud(String displayName, String url, String username, String password) {
+  public VirtualBoxCloud(String displayName, String url, String username, Secret password, Integer activeMachineLimit) {
     super(displayName);
     this.url = url;
     this.username = username;
-    this.password = Scrambler.scramble(Util.fixEmptyAndTrim(password));
+    this.password = password;
+    this.activeMachineLimit = activeMachineLimit;
   }
 
   @Override
@@ -51,6 +52,7 @@ public class VirtualBoxCloud extends Cloud {
   public boolean canProvision(Label label) {
     return false;
   }
+
 
   public synchronized List<VirtualBoxMachine> refreshVirtualMachinesList() {
     virtualBoxMachines = VirtualBoxUtils.getMachines(this, new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
@@ -83,11 +85,12 @@ public class VirtualBoxCloud extends Cloud {
     public FormValidation doTestConnection(
         @QueryParameter String url,
         @QueryParameter String username,
-        @QueryParameter String password
+        @QueryParameter Secret password,
+        @QueryParameter Integer activeMachineLimit
     ) {
       LOG.log(Level.INFO, "Testing connection to {0} with username {1}", new Object[]{url, username});
       try {
-        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password),
+        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password, activeMachineLimit),
                 new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
         return FormValidation.ok(Messages.VirtualBoxHost_success());
       } catch (Throwable e) {
@@ -104,9 +107,11 @@ public class VirtualBoxCloud extends Cloud {
     return username;
   }
 
-  public String getPassword() {
-    return Scrambler.descramble(password);
+  public Secret getPassword() {
+    return password;
   }
+
+  public Integer getActiveMachineLimit() {return activeMachineLimit; }
 
   @Override
   public String toString() {

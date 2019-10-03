@@ -1,19 +1,16 @@
 package hudson.plugins.virtualbox;
 
 import hudson.util.Secret;
+import org.virtualbox_5_2.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.virtualbox_4_2.*;
 
-/**
- * @author Mihai Serban
- */
-public final class VirtualBoxControlV42 implements VirtualBoxControl {
+public final class VirtualBoxControlV52 implements VirtualBoxControl {
 
     private final VirtualBoxManager manager;
     private final IVirtualBox vbox;
 
-    public VirtualBoxControlV42(String hostUrl, String userName, Secret password) {
+    public VirtualBoxControlV52(String hostUrl, String userName, Secret password) {
         manager = VirtualBoxManager.createInstance(null);
         manager.connect(hostUrl, userName, password.getPlainText());
         vbox = manager.getVBox();
@@ -82,6 +79,16 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
         if (null == machine) {
             log.logFatalError("Cannot find node: " + vbMachine.getName());
             return -1;
+        }
+
+        // check to see if active machine limit has reached, and wait until available if it has
+        Boolean available = !getActiveMachineLimitReached(vbMachine.getHost());
+        while (!available) {
+            log.logInfo("active machine limit reached, waiting for availability...");
+            try {
+                wait(10000);
+            } catch (InterruptedException e) {}
+            available = !getActiveMachineLimitReached(vbMachine.getHost());
         }
 
         // states diagram: https://www.virtualbox.org/sdkref/_virtual_box_8idl.html#80b08f71210afe16038e904a656ed9eb
@@ -209,7 +216,7 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
             progress = session.getConsole().powerDown();
         } else {
             // Running or Paused
-            progress = session.getConsole().saveState();
+            progress = session.getMachine().saveState();
         }
 
         progress.waitForCompletion(-1);

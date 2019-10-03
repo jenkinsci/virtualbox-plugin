@@ -6,7 +6,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * @author Evgeny Mandrikov
  */
-public class VirtualBoxMachine implements Serializable, Comparable<VirtualBoxMachine> {
+public class VirtualBoxMachine implements Comparable<VirtualBoxMachine> {
 
   private final VirtualBoxCloud host;
   private final String name;

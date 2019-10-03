@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <!-- TODO help -->
@@ -16,6 +17,10 @@
 
   <f:entry title="${%Password}" field="password">
     <f:password/>
+  </f:entry>
+
+  <f:entry title="${%Active Machine Limit}" field="activeMachineLimit">
+    <f:number/>
   </f:entry>
 
   <f:validateButton title="${%Test connection}" progress="${%Testing...}" method="testConnection" with="url,username,password"/>

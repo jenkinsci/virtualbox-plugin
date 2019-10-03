@@ -1,5 +1,6 @@
 package hudson.plugins.virtualbox;
 
+import hudson.util.Secret;
 import java.util.ArrayList;
 import java.util.List;
 import org.virtualbox_4_3.*;
@@ -12,9 +13,9 @@ public final class VirtualBoxControlV43 implements VirtualBoxControl {
     private final VirtualBoxManager manager;
     private final IVirtualBox vbox;
 
-    public VirtualBoxControlV43(String hostUrl, String userName, String password) {
+    public VirtualBoxControlV43(String hostUrl, String userName, Secret password) {
         manager = VirtualBoxManager.createInstance(null);
-        manager.connect(hostUrl, userName, password);
+        manager.connect(hostUrl, userName, password.getPlainText());
         vbox = manager.getVBox();
     }
 
@@ -48,6 +49,27 @@ public final class VirtualBoxControlV43 implements VirtualBoxControl {
     }
 
     /**
+     * This method will check to see if the active machine limit has been reached.
+     *
+     * @param host VirtualBox host
+     * @return a boolean representing if the active machine limit has been reached
+     */
+    public synchronized boolean getActiveMachineLimitReached(VirtualBoxCloud host) {
+        Integer activeMachineCount = 0;
+        for (IMachine machine : vbox.getMachines()) {
+            switch (machine.getState()) {
+                case Aborted:
+                case PoweredOff:
+                case Saved:
+                    break;
+                default:
+                    activeMachineCount++;
+            }
+        }
+        return activeMachineCount >= host.getActiveMachineLimit();
+    }
+
+    /**
      * Starts specified VirtualBox virtual machine.
      *
      * @param vbMachine virtual machine to start
@@ -71,7 +93,7 @@ public final class VirtualBoxControlV43 implements VirtualBoxControl {
         while (state.value() >= MachineState.FirstTransient.value() && state.value() <= MachineState.LastTransient.value()) {
             log.logInfo("node " + vbMachine.getName() + " in state " + state.toString());
             try {
-                Thread.sleep(1000);
+                wait(1000);
             } catch (InterruptedException e) {}
             state = machine.getState();
         }
@@ -162,7 +184,7 @@ public final class VirtualBoxControlV43 implements VirtualBoxControl {
         while (state.value() >= MachineState.FirstTransient.value() && state.value() <= MachineState.LastTransient.value()) {
             log.logInfo("node " + vbMachine.getName() + " in state " + state.toString());
             try {
-                Thread.sleep(1000);
+                wait(1000);
             } catch (InterruptedException e) {}
             state = machine.getState();
         }

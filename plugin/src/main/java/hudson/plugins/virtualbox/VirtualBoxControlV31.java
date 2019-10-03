@@ -1,6 +1,7 @@
 package hudson.plugins.virtualbox;
 
 import com.sun.xml.ws.commons.virtualbox_3_1.*;
+import hudson.util.Secret;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +14,13 @@ public final class VirtualBoxControlV31 implements VirtualBoxControl {
   private final String userName;
   private final String password;
 
-  public VirtualBoxControlV31(String hostUrl, String userName, String password) {
+  public VirtualBoxControlV31(String hostUrl, String userName, Secret password) {
     // verify connection
     this.hostUrl = hostUrl;
     this.userName = userName;
-    this.password = password;
+    this.password = password.getPlainText();
 
-    ConnectionHolder holder = connect(hostUrl, userName, password);
+    ConnectionHolder holder = connect(hostUrl, userName, password.getPlainText());
     holder.disconnect();
   }
 
@@ -67,6 +68,8 @@ public final class VirtualBoxControlV31 implements VirtualBoxControl {
     holder.disconnect();
     return result;
   }
+
+  // TODO figure out how to support active machine limit for this version of VBox
 
   /**
    * Starts specified VirtualBox virtual machine.

@@ -56,6 +56,10 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
         return;
       }
       log(listener, Messages.VirtualBoxLauncher_startVM(machine));
+
+      // TODO this is where we should check to see if we are allowed to launch the machine
+
+
       long result = VirtualBoxUtils.startVm(machine, virtualMachineType, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));
       if (result != 0) {
         listener.fatalError("Unable to launch");
@@ -125,6 +129,7 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
       VirtualBoxMachine machine = VirtualBoxPlugin.getVirtualBoxMachine(hostName, virtualMachineName);
       if (machine == null) {
         listener.fatalError("Unable to find specified machine");
+        return;
       }
       log(listener, Messages.VirtualBoxLauncher_stopVM(machine));
       long result = VirtualBoxUtils.stopVm(machine, virtualMachineStopMode, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));

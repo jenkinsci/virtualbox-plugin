@@ -3,17 +3,14 @@ package hudson.plugins.virtualbox;
 import hudson.util.Secret;
 import java.util.ArrayList;
 import java.util.List;
-import org.virtualbox_4_2.*;
+import org.virtualbox_5_0.*;
 
-/**
- * @author Mihai Serban
- */
-public final class VirtualBoxControlV42 implements VirtualBoxControl {
+public final class VirtualBoxControlV50 implements VirtualBoxControl {
 
     private final VirtualBoxManager manager;
     private final IVirtualBox vbox;
 
-    public VirtualBoxControlV42(String hostUrl, String userName, Secret password) {
+    public VirtualBoxControlV50(String hostUrl, String userName, Secret password) {
         manager = VirtualBoxManager.createInstance(null);
         manager.connect(hostUrl, userName, password.getPlainText());
         vbox = manager.getVBox();
@@ -209,7 +206,7 @@ public final class VirtualBoxControlV42 implements VirtualBoxControl {
             progress = session.getConsole().powerDown();
         } else {
             // Running or Paused
-            progress = session.getConsole().saveState();
+            progress = session.getMachine().saveState();
         }
 
         progress.waitForCompletion(-1);
