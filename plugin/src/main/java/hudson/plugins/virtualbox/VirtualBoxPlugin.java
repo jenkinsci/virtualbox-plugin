@@ -45,9 +45,6 @@ public class VirtualBoxPlugin extends Plugin {
   public static List<VirtualBoxCloud> getHosts() {
     List<VirtualBoxCloud> result = new ArrayList<VirtualBoxCloud>();
     Hudson hudson = Hudson.getInstance();
-    if (hudson == null) {
-        return result;
-    }
     for (Cloud cloud : hudson.clouds) {
       if (cloud instanceof VirtualBoxCloud) {
         result.add((VirtualBoxCloud) cloud);
@@ -137,9 +134,6 @@ public class VirtualBoxPlugin extends Plugin {
       throws IOException {
     LOG.log(Level.INFO, "Searching VirtualBox machine with MacAddress {0}", macAddress);
     Hudson hudson = Hudson.getInstance();
-    if (hudson == null) {
-        return;
-    }
     for (Node node : hudson.getNodes()) {
       if (node instanceof VirtualBoxSlave) {
         VirtualBoxSlave slave = (VirtualBoxSlave) node;

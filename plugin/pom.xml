@@ -15,51 +15,15 @@
   <url>http://wiki.jenkins-ci.org/display/JENKINS/VirtualBox+Plugin</url>
 
   <dependencies>
-    <dependency>
-      <groupId>org.virtualbox</groupId>
-      <artifactId>vboxws</artifactId>
-      <version>3.1</version>
-      <classifier>java15</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.virtualbox</groupId>
-      <artifactId>vboxws-40</artifactId>
-      <version>4.0.8</version>
-    </dependency>
-      <dependency>
-          <groupId>org.virtualbox</groupId>
-          <artifactId>vboxws-41</artifactId>
-          <version>4.1.8</version>
-      </dependency>
-      <dependency>
-          <groupId>org.virtualbox</groupId>
-          <artifactId>vboxws-42</artifactId>
-          <version>4.2.0</version>
-      </dependency>
-      <dependency>
-          <groupId>org.virtualbox</groupId>
-          <artifactId>vboxws-43</artifactId>
-          <version>4.3.0</version>
-      </dependency>
-      <dependency>
-          <groupId>org.virtualbox</groupId>
-          <artifactId>vboxws-50</artifactId>
-          <version>5.0.16</version>
-      </dependency>
-      <dependency>
-          <groupId>org.virtualbox</groupId>
-          <artifactId>vboxws-51</artifactId>
-          <version>5.1.6</version>
-      </dependency>
       <dependency>
           <groupId>org.virtualbox</groupId>
           <artifactId>vboxws-52</artifactId>
-          <version>5.2.26</version>
+          <version>5.2.32</version>
       </dependency>
       <dependency>
           <groupId>org.virtualbox</groupId>
           <artifactId>vboxws-60</artifactId>
-          <version>6.0.4</version>
+          <version>6.0.12</version>
       </dependency>
   </dependencies>
 
