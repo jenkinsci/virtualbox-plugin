@@ -1,7 +1,7 @@
 VirtualBox Plugin
 =================
 
-This plugin manage slaves using VirtualBox vms with its WebServer API.
+This plugin manage remoting agents using VirtualBox VMs with the VBoxWebSrv API.
 
 It currently supports VirtualBox versions 5.2 and 6.0 (the versions actively maintained by Oracle).
 
