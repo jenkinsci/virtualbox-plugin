@@ -10,13 +10,13 @@ The minimum version of Jenkins required for this plugin is 2.60.1.
 Sources
 -------
 
-If you're wanting to make changes, please clone the git repository at [sources]
+If you're wanting to make changes, please fork the repository and submit a pull request.
 
-git://github.com/jenkinsci/virtualbox-plugin.git
 
 To Do
 -------------
 * Add support for Snapshots
+* Update this README (and the wiki) with better documentation
 
 
 Documentation
