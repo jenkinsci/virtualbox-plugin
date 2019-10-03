@@ -5,6 +5,8 @@ This plugin manage slaves using VirtualBox vms with its WebServer API.
 
 It currently supports VirtualBox versions 5.2 and 6.0 (the versions actively maintained by Oracle).
 
+The minimum version of Jenkins required for this plugin is 2.60.1.
+
 Sources
 -------
 
