@@ -14,6 +14,11 @@ If you're wanting to make changes, please clone the git repository at [sources]
 
 git://github.com/jenkinsci/virtualbox-plugin.git
 
+To Do
+-------------
+Add support for Snapshots
+
+
 Documentation
 -------------
 
