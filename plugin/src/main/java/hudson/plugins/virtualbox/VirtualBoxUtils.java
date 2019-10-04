@@ -11,11 +11,22 @@ public final class VirtualBoxUtils {
 
   // public methods
   public static long startVm(VirtualBoxMachine machine, String virtualMachineType, VirtualBoxLogger log) {
-    return getVboxControl(machine.getHost(), log).startVm(machine, virtualMachineType, log);
+    try {
+      machine.getHost().incrementActiveMachines();
+      long result = getVboxControl(machine.getHost(), log).startVm(machine, virtualMachineType, log);
+      if (result != 0) { machine.getHost().decrementActiveMachines(); }
+      return result;
+    }
+    catch (InterruptedException e) {
+      log.logFatalError("node " + machine.getName() + " error: InterruptedException thrown while waiting!");
+      return 1;
+    }
   }
 
   public static long stopVm(VirtualBoxMachine machine, String virtualMachineStopMode, VirtualBoxLogger log) {
-    return getVboxControl(machine.getHost(), log).stopVm(machine, virtualMachineStopMode, log);
+    long result = getVboxControl(machine.getHost(), log).stopVm(machine, virtualMachineStopMode, log);
+    if (result == 0) { machine.getHost().decrementActiveMachines(); }
+    return result;
   }
 
   public static List<VirtualBoxMachine> getMachines(VirtualBoxCloud host, VirtualBoxLogger log) {

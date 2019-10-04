@@ -47,27 +47,6 @@ public final class VirtualBoxControlV60 implements VirtualBoxControl {
     }
 
     /**
-     * This method will check to see if the active machine limit has been reached.
-     *
-     * @param host VirtualBox host
-     * @return a boolean representing if the active machine limit has been reached
-     */
-    public synchronized boolean getActiveMachineLimitReached(VirtualBoxCloud host) {
-        Integer activeMachineCount = 0;
-        for (IMachine machine : vbox.getMachines()) {
-            switch (machine.getState()) {
-                case Aborted:
-                case PoweredOff:
-                case Saved:
-                    break;
-                default:
-                    activeMachineCount++;
-            }
-        }
-        return activeMachineCount >= host.getActiveMachineLimit();
-    }
-
-    /**
      * Starts specified VirtualBox virtual machine.
      *
      * @param vbMachine virtual machine to start
@@ -80,16 +59,6 @@ public final class VirtualBoxControlV60 implements VirtualBoxControl {
         if (null == machine) {
             log.logFatalError("Cannot find node: " + vbMachine.getName());
             return -1;
-        }
-
-        // check to see if active machine limit has reached, and wait until available if it has
-        Boolean available = getActiveMachineLimitReached(vbMachine.getHost());
-        while (!available) {
-            log.logInfo("active machine limit reached, waiting for availability...");
-            try {
-                wait(1000);
-            } catch (InterruptedException e) {}
-            available = getActiveMachineLimitReached(vbMachine.getHost());
         }
 
         // states diagram: https://www.virtualbox.org/sdkref/_virtual_box_8idl.html#80b08f71210afe16038e904a656ed9eb
@@ -178,6 +147,8 @@ public final class VirtualBoxControlV60 implements VirtualBoxControl {
      */
     public synchronized long stopVm(VirtualBoxMachine vbMachine, String stopMode, VirtualBoxLogger log) {
         IMachine machine = vbox.findMachine(vbMachine.getName());
+        VirtualBoxCloud cloud = vbMachine.getHost();
+
         if (null == machine) {
             log.logFatalError("Cannot find node: " + vbMachine.getName());
             return -1;
@@ -229,6 +200,7 @@ public final class VirtualBoxControlV60 implements VirtualBoxControl {
             log.logFatalError("node " + vbMachine.getName() + " error: " + getVBProcessError(progress));
         } else {
             log.logInfo("node " + vbMachine.getName() + " stopped");
+            cloud.decrementActiveMachines();
         }
 
         return result;

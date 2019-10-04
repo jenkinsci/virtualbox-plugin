@@ -58,6 +58,7 @@ public class VirtualBoxComputerLauncher extends ComputerLauncher {
       log(listener, Messages.VirtualBoxLauncher_startVM(machine));
 
       // TODO this is where we should check to see if we are allowed to launch the machine
+      // Don't launch if the the machine is already running
 
 
       long result = VirtualBoxUtils.startVm(machine, virtualMachineType, new VirtualBoxTaskListenerLog(listener, "[VirtualBox] "));

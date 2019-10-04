@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.Semaphore;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -28,6 +29,7 @@ public class VirtualBoxCloud extends Cloud {
   private final String username;
   private final Secret password;
   private final Integer activeMachineLimit;
+  private final Semaphore activeMachines;
 
   /**
    * Lazily computed list of virtual machines from this host.
@@ -41,6 +43,12 @@ public class VirtualBoxCloud extends Cloud {
     this.username = username;
     this.password = password;
     this.activeMachineLimit = activeMachineLimit;
+    if (this.activeMachineLimit == 0 || this.activeMachineLimit == null) {
+      this.activeMachines = null;
+    }
+    else {
+      this.activeMachines = new Semaphore(this.activeMachineLimit);
+    }
   }
 
   @Override
@@ -107,11 +115,21 @@ public class VirtualBoxCloud extends Cloud {
     return username;
   }
 
-  public Secret getPassword() {
-    return password;
+  public Secret getPassword() { return password; }
+
+  public void incrementActiveMachines() throws InterruptedException {
+    if (activeMachines != null) {
+      this.activeMachines.acquire();
+    }
+    else { return; }
   }
 
-  public Integer getActiveMachineLimit() {return activeMachineLimit; }
+  public void decrementActiveMachines() {
+    if (activeMachines != null) {
+      this.activeMachines.release();
+    }
+    else { return; }
+  }
 
   @Override
   public String toString() {
