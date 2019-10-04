@@ -1,16 +1,23 @@
 VirtualBox Plugin
 =================
 
-This plugin manage slaves using VirtualBox vms with its WebServer API.
+This plugin manages remoting agents using VirtualBox VMs with the VBoxWebSrv API.
 
-It currently supports VirtualBox versions 3 to 6.
+It currently supports VirtualBox versions 5.2 and 6.0 (the versions actively maintained by Oracle).
 
-Sources
+The minimum version of Jenkins required for this plugin is 2.60.1.
+
+Contributing
 -------
 
-If you're wanting to make changes, please clone the git repository at [sources]
+If you're wanting to make changes, please fork the repository and submit a pull request.
 
-git://github.com/bjones14/virtualbox-plugin.git
+
+To Do
+-------------
+* Add support for Snapshots
+* Update this README (and the wiki) with better documentation
+
 
 Documentation
 -------------
