@@ -1,11 +1,17 @@
 package hudson.plugins.virtualbox;
 
+import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildWrapper;
 import java.io.IOException;
+
+import hudson.tasks.BuildWrapperDescriptor;
+import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * @author Evgeny Mandrikov
@@ -44,36 +50,17 @@ public class VirtualBoxBuildWrapper extends BuildWrapper {
     return hostName;
   }
 
-  public String getVirtualMachineName() {
-    return virtualMachineName;
-  }
+  public String getVirtualMachineName() { return virtualMachineName; }
 
-  // TODO enable wrapper
-//  @Extension
-//  public static final class DescriptorImpl extends Descriptor<BuildWrapper> {
-//    @Override
-//    public String getDisplayName() {
-//      return Messages.VirtualBoxBuildWrapper_displayName();
-//    }
-//
-//    /**
-//     * For UI.
-//     *
-//     * @see VirtualBoxPlugin#getHost(String)
-//     */
-//    @SuppressWarnings({"UnusedDeclaration"})
-//    public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
-//      return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
-//    }
-//
-//    /**
-//     * For UI.
-//     *
-//     * @see VirtualBoxPlugin#getHosts()
-//     */
-//    @SuppressWarnings({"UnusedDeclaration"})
-//    public List<VirtualBoxHost> getHosts() {
-//      return VirtualBoxPlugin.getHosts();
-//    }
-//  }
+  @Extension
+  public static final class DescriptorImpl extends BuildWrapperDescriptor {
+    public ListBoxModel doFillVirtualMachineName(@QueryParameter String hostName) {
+      return VirtualBoxPlugin.getDefinedVirtualMachinesListBox(hostName);
+    }
+
+    @Override
+    public boolean isApplicable(AbstractProject<?, ?> item) {
+      return false;
+    }
+  }
 }

@@ -20,9 +20,10 @@
   </f:entry>
 
   <f:entry title="${%Active Machine Limit}" field="activeMachineLimit">
-    <f:number/>
+    <f:number default="1"/>
   </f:entry>
 
-  <f:validateButton title="${%Test connection}" progress="${%Testing...}" method="testConnection" with="url,username,password"/>
+  <f:validateButton title="${%Test connection}" progress="${%Testing...}" method="testConnection"
+                    with="url,username,password"/>
 
 </j:jelly>

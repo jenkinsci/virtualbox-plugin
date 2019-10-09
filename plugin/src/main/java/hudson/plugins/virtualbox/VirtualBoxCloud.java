@@ -7,6 +7,7 @@ import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.kohsuke.stapler.QueryParameter;
  * {@link Cloud} implementation for VirtualBox.
  *
  * @author Evgeny Mandrikov
+ * @author Brandon Jones
  */
 public class VirtualBoxCloud extends Cloud {
 
@@ -42,13 +44,21 @@ public class VirtualBoxCloud extends Cloud {
     this.url = url;
     this.username = username;
     this.password = password;
-    this.activeMachineLimit = activeMachineLimit;
-    if (this.activeMachineLimit == 0 || this.activeMachineLimit == null) {
+    if (null == activeMachineLimit) {
+      this.activeMachineLimit = -1;
       this.activeMachines = null;
     }
     else {
-      this.activeMachines = new Semaphore(this.activeMachineLimit);
+      if (activeMachineLimit < 1) {
+        this.activeMachineLimit = -1;
+        this.activeMachines = null;
+      }
+      else {
+        this.activeMachineLimit = activeMachineLimit;
+        this.activeMachines = new Semaphore(this.activeMachineLimit);
+      }
     }
+
   }
 
   @Override
@@ -93,16 +103,17 @@ public class VirtualBoxCloud extends Cloud {
     public FormValidation doTestConnection(
         @QueryParameter String url,
         @QueryParameter String username,
-        @QueryParameter Secret password,
-        @QueryParameter Integer activeMachineLimit
+        @QueryParameter Secret password
     ) {
       LOG.log(Level.INFO, "Testing connection to {0} with username {1}", new Object[]{url, username});
       try {
-        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password, activeMachineLimit),
-                new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
+        VirtualBoxUtils.getMachines(new VirtualBoxCloud("testConnection", url, username, password,
+                        null), new VirtualBoxSystemLog(LOG, "[VirtualBox] "));
+        LOG.log(Level.INFO, "Successfully connected to " + url + "!");
         return FormValidation.ok(Messages.VirtualBoxHost_success());
       } catch (Throwable e) {
-        return FormValidation.error(e.getMessage());
+        LOG.log(Level.SEVERE, "Unhandled exception occurred while testing cloud connection...", e);
+        return FormValidation.error("Unhandled exception : " + e.toString());
       }
     }
   }
@@ -118,14 +129,14 @@ public class VirtualBoxCloud extends Cloud {
   public Secret getPassword() { return password; }
 
   public void incrementActiveMachines() throws InterruptedException {
-    if (activeMachines != null) {
+    if (null != activeMachines) {
       this.activeMachines.acquire();
     }
     else { return; }
   }
 
   public void decrementActiveMachines() {
-    if (activeMachines != null) {
+    if (null != activeMachines) {
       this.activeMachines.release();
     }
     else { return; }

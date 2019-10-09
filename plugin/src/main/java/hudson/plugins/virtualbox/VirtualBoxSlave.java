@@ -11,7 +11,11 @@ import hudson.slaves.RetentionStrategy;
 import hudson.util.FormValidation;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -19,6 +23,7 @@ import org.kohsuke.stapler.QueryParameter;
  * {@link Slave} running on VirtualBox.
  *
  * @author Evgeny Mandrikov
+ * @author Brandon Jones
  */
 public class VirtualBoxSlave extends Slave {
   private static final Logger LOG = Logger.getLogger(VirtualBoxSlave.class.getName());
@@ -80,14 +85,14 @@ public class VirtualBoxSlave extends Slave {
   /**
    * @return host name
    */
-  public String getHostName() {
+  String getHostName() {
     return hostName;
   }
 
   /**
    * @return virtual machine name
    */
-  public String getVirtualMachineName() {
+  String getVirtualMachineName() {
     return virtualMachineName;
   }
 
@@ -130,6 +135,7 @@ public class VirtualBoxSlave extends Slave {
      * For UI.
      *
      * @see VirtualBoxPlugin#getHost(String)
+     * @return A list of defined VirtualBoxMachines
      */
     public List<VirtualBoxMachine> getDefinedVirtualMachines(String hostName) {
       return VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
@@ -139,6 +145,7 @@ public class VirtualBoxSlave extends Slave {
      * For UI.
      *
      * @see VirtualBoxPlugin#getHosts()
+     * @return A list of VirtualBoxClouds
      */
     public List<VirtualBoxCloud> getHosts() {
       return VirtualBoxPlugin.getHosts();
@@ -146,27 +153,57 @@ public class VirtualBoxSlave extends Slave {
 
     /**
      * For UI.
-     * TODO Godin: doesn't work
+     * @param HostName The name of the host to be validated.
+     * @return FormValidation for error or ok
      */
-    public FormValidation doCheckHostName(@QueryParameter String value) {
-      LOG.info("Perform on the fly check - hostName");
-      if (Util.fixEmptyAndTrim(value) == null) {
-        return FormValidation.error("VirtualBox Host is mandatory");
+    public FormValidation doCheckHostName(@QueryParameter String HostName) {
+      if (Objects.equals(Util.fixEmptyAndTrim(HostName), Messages.VirtualBoxSlave_defaultHost())) {
+        return FormValidation.error("VirtualBox Host is mandatory!");
+      } else {
+        return FormValidation.ok();
       }
-      return FormValidation.ok();
     }
 
     /**
      * For UI.
-     * TODO Godin: doesn't work
+     * @param VirtualMachineName The name of the virtual machine to be validated.
+     * @return FormValidation for error or ok
      */
-    public FormValidation doCheckVirtualMachineName(@QueryParameter String value) {
-      LOG.info("Perform on the fly check - virtualMachineName");
-      if (Util.fixEmptyAndTrim(value) == null) {
-        return FormValidation.error("Virtual Machine Name is mandatory");
+    public FormValidation doCheckVirtualMachineName(@QueryParameter String VirtualMachineName) {
+      if (Util.fixEmptyAndTrim(VirtualMachineName) == null) {
+        return FormValidation.error("Virtual Machine Name is mandatory!");
+      } else {
+        return FormValidation.ok();
       }
-      return FormValidation.ok();
+    }
+
+    /**
+     * Used to auto-populate the list of virtual machine names based on the selected host.
+     * @param item The ancestor object used to access the saved virtual machine name.
+     * @param HostName The name of the host to query virtual machine names from.
+     * @return A ListBoxModel containing the virtual machine names.
+     */
+    public ListBoxModel doFillVirtualMachineNameItems(String HostName) {
+      if (Messages.VirtualBoxSlave_defaultHost().equals(HostName)) {
+        LOG.log(Level.INFO, "Default host name selected - returning null virtual machine list");
+        return null;
+      }
+      LOG.log(Level.INFO, "Host name set as " + HostName);
+      LOG.log(Level.INFO, "VBoxSlave object set as " + item.getFullDisplayName());
+      ListBoxModel m = VirtualBoxPlugin.getDefinedVirtualMachinesListBox(HostName);
+
+
+
+      // Find the index of the saved Virtual Machine Name.
+      for (ListBoxModel.Option option : m) {
+        if (option.value.equals("test")) {//VBoxSlave.getVirtualMachineName())) {
+          option.selected = true;
+        }
+        else {
+          LOG.log(Level.INFO, option.value.toString());
+        }
+      }
+      return m;
     }
   }
-
 }

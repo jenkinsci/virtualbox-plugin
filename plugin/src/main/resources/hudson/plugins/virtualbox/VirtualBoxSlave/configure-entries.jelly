@@ -4,9 +4,8 @@
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
 
-  <f:entry title="${%VirtualBox Host}" field="hostName">
-    <select class="setting-input" name="hostName" value="${it.hostName}"
-            onchange="updateListBox(document.getElementsByName('virtualMachineName')[0],'${rootURL}/plugin/virtualbox/computerNameValues?hostName='+encode(this.value))">
+  <f:entry title="${%Host Name}" field="HostName">
+    <select class="setting-input" name="hostName" value="${instance.hostName}">
       <option>Select host...</option>
       <j:forEach var="d" items="${descriptor.hosts}">
         <option selected="${d.displayName==it.hostName?'true':null}">
@@ -16,14 +15,8 @@
     </select>
   </f:entry>
 
-  <f:entry title="${%Virtual Machine Name}" field="virtualMachineName">
-    <select class="setting-input" name="virtualMachineName" value="${it.virtualMachineName}">
-      <j:forEach var="v" items="${descriptor.getDefinedVirtualMachines(it.hostName)}">
-        <option selected="${v.name==it.virtualMachineName?'true':null}">
-          ${v.name}
-        </option>
-      </j:forEach>
-    </select>
+  <f:entry title="${%Virtual Machine Name}" field="VirtualMachineName">
+    <f:select />
   </f:entry>
 
   <f:entry title="${%Virtual Machine Type}" field="virtualMachineType">
@@ -108,5 +101,4 @@
 
   <f:descriptorList title="${%Node Properties}" descriptors="${h.getNodePropertyDescriptors(descriptor.clazz)}"
                     field="nodeProperties"/>
-
 </j:jelly>

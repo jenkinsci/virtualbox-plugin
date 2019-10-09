@@ -20,6 +20,7 @@ public class VirtualBoxComputer extends SlaveComputer {
 
   @Override
   public HttpResponse doDoDelete() throws IOException {
+
     // TODO powerOff on delete
     return super.doDoDelete();
   }

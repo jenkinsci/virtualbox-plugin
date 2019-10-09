@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -98,21 +100,31 @@ public class VirtualBoxPlugin extends Plugin {
   }
 
   /**
-   * For UI.
+   *
+   * @param hostName
+   * @return A ListBoxModel containing
    */
-  @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
-  public void doComputerNameValues(StaplerRequest req, StaplerResponse resp, @QueryParameter("hostName") String hostName)
-      throws IOException, ServletException {
+  public static ListBoxModel getDefinedVirtualMachinesListBox(String hostName) {
     ListBoxModel m = new ListBoxModel();
-    List<VirtualBoxMachine> virtualMachines = getDefinedVirtualMachines(hostName);
+    List<VirtualBoxMachine> virtualMachines = VirtualBoxPlugin.getDefinedVirtualMachines(hostName);
     if (virtualMachines != null && virtualMachines.size() > 0) {
       for (VirtualBoxMachine vm : virtualMachines) {
         m.add(new ListBoxModel.Option(vm.getName(), vm.getName()));
       }
       m.get(0).selected = true;
     }
+    return m;
+  }
+
+  // bjones - disabled as it is currently unused
+  /*
+  @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
+  public void doComputerNameValues(StaplerRequest req, StaplerResponse resp, @QueryParameter("hostName") String hostName)
+      throws IOException, ServletException {
+    ListBoxModel m = getDefinedVirtualMachinesListBox(hostName);
     m.writeTo(req, resp);
   }
+  */
 
   /**
    * Used for discovering {@link VirtualBoxSlave} with specified MAC Address.
@@ -133,8 +145,8 @@ public class VirtualBoxPlugin extends Plugin {
   public void doGetSlaveAgent(StaplerRequest req, StaplerResponse resp, @QueryParameter("macAddress") String macAddress)
       throws IOException {
     LOG.log(Level.INFO, "Searching VirtualBox machine with MacAddress {0}", macAddress);
-    Hudson hudson = Hudson.getInstance();
-    for (Node node : hudson.getNodes()) {
+    Jenkins jenkins = Jenkins.getInstance();
+    for (Node node : jenkins.getNodes()) {
       if (node instanceof VirtualBoxSlave) {
         VirtualBoxSlave slave = (VirtualBoxSlave) node;
         VirtualBoxMachine vbox = getVirtualBoxMachine(slave.getHostName(), slave.getVirtualMachineName());
@@ -143,7 +155,7 @@ public class VirtualBoxPlugin extends Plugin {
         LOG.log(Level.INFO, "MacAddress for {0} is {1}", new Object[]{slave.getNodeName(), vboxMacAddress});
 
         if (macAddress.equalsIgnoreCase(vboxMacAddress)) {
-          String url = hudson.getRootUrl() + "/computer/" + slave.getNodeName() + "/slave-agent.jnlp";
+          String url = jenkins.getRootUrl() + "/computer/" + slave.getNodeName() + "/slave-agent.jnlp";
           LOG.log(Level.INFO, "Found {0} for Mac Address {1}, sending redirect to {2}", new Object[]{slave, macAddress, url});
           resp.sendRedirect(url);
           return;
